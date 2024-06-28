@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:camera/camera.dart';
@@ -110,7 +111,7 @@ mixin class BaseFeatureCamera {
   void Function()? _tempOnCameraInitialized;
   void Function(FeatureCameraException exception)? _tempOnCameraInitializedFailure;
 
-  void dispose() {
+  void disposeCamera() {
     _tempOnCameraInitialized = _onCameraInitialized;
     _onCameraInitialized = null;
     _tempOnCameraInitializedFailure = _onCameraInitializedFailure;
@@ -126,5 +127,26 @@ mixin class BaseFeatureCamera {
       return null;
     }
     return cameraController?.takePicture();
+  }
+
+  Timer? timer;
+
+  Future<void> startImageStream({required void Function(CameraImage image) onImageStream}) async {
+    if (cameraController == null) {
+      log("unable to startImageStream, cameraController missing");
+      return;
+    }
+    cameraController?.startImageStream((image) {
+      if (timer != null) return;
+      timer = Timer(const Duration(seconds: 2), () {
+        onImageStream(image);
+        timer?.cancel();
+        timer = null;
+      });
+    });
+  }
+
+  Future<void> stopImageStream() async {
+    return cameraController?.stopImageStream();
   }
 }
