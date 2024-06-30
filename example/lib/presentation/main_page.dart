@@ -1,4 +1,6 @@
 import 'package:example/data/dto/model/feature_model.dart';
+import 'package:example/presentation/camera_selfie_page.dart';
+import 'package:example/presentation/capture_image_page.dart';
 import 'package:example/presentation/stream_camera_page.dart';
 import 'package:example/presentation/widget/feature_widget.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +24,11 @@ class _MainPageState extends State<MainPage> {
       desc: 'Stream Image',
       key: 'STREAM_IMAGE',
     ),
+    FeatureModel(
+      title: 'Selfie Camera',
+      desc: 'Selfie Camera',
+      key: 'SELFIE_CAMERA',
+    ),
   ];
 
   @override
@@ -43,9 +50,13 @@ class _MainPageState extends State<MainPage> {
             onTap: () async {
               switch (feature.key) {
                 case "CAPTURE_IMAGE":
+                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CaptureImagePage()));
                   break;
                 case "STREAM_IMAGE":
                   Navigator.of(context).push(MaterialPageRoute(builder: (_) => const StreamCameraPage()));
+                  break;
+                case "SELFIE_CAMERA":
+                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CameraSelfiePage()));
                   break;
               }
             },

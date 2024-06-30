@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_feature_camera/flutter_feature_camera.dart';
 
 class PreviewImagePage extends StatefulWidget {
   final String base64Image;
@@ -36,11 +37,22 @@ class _PreviewImagePageState extends State<PreviewImagePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: const Text("Camera"),
+        title: const Text("Preview Image", style: TextStyle(color: Colors.black)),
       ),
-      body: Column(
+      body: Stack(
         children: [
-          Image.memory(base64.decode(widget.base64Image)),
+          Image.memory(base64.decode(widget.base64Image), fit: BoxFit.cover),
+          IgnorePointer(
+            child: ClipPath(
+              clipper: CircleClipper(),
+              child: CustomPaint(
+                painter: CirclePainter(),
+                child: Container(
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );

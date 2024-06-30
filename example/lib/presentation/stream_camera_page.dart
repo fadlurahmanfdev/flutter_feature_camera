@@ -1,10 +1,8 @@
 import 'dart:convert';
 
 import 'package:example/presentation/preview_image_page.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_feature_camera/flutter_feature_camera.dart';
-import 'package:camera/camera.dart';
 
 class StreamCameraPage extends StatefulWidget {
   const StreamCameraPage({super.key});
@@ -22,7 +20,7 @@ class _StreamCameraPageState extends State<StreamCameraPage> with BaseFeatureCam
       onCameraInitialized: onCameraInitialized,
       onCameraInitializedFailure: onCameraInitializedFailure,
     );
-    initializeCamera(facingType: FeatureCameraFacingType.front);
+    initializeCamera(cameraLensDirection: CameraLensDirection.front);
   }
 
   @override

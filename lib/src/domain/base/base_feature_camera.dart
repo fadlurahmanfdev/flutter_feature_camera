@@ -1,26 +1,29 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:camera/camera.dart';
-import 'package:flutter_feature_camera/src/data/enum/feature_camera_facing_type.dart';
 import 'package:flutter_feature_camera/src/data/exception/feature_camera_exception.dart';
+import 'package:image/image.dart' as image_lib;
 
 mixin class BaseFeatureCamera {
   CameraController? cameraController;
 
   final List<CameraDescription> _cameraAvailable = [];
-  late CameraLensDirection cameraLensDirection;
-  late FeatureCameraFacingType cameraFacingType;
+  late CameraLensDirection currentCameraLensDirection;
 
   void Function()? _onCameraInitialized;
   void Function(FeatureCameraException exception)? _onCameraInitializedFailure;
+  void Function(FlashMode mode)? _onFlashModeChanged;
 
   void addListener({
-    void Function()? onCameraInitialized,
+    required void Function() onCameraInitialized,
     void Function(FeatureCameraException exception)? onCameraInitializedFailure,
+    void Function(FlashMode mode)? onFlashModeChanged,
   }) {
     _onCameraInitialized = onCameraInitialized;
     _onCameraInitializedFailure = onCameraInitializedFailure;
+    _onFlashModeChanged = onFlashModeChanged;
   }
 
   Future<void> _initCameraAvailable() async {
@@ -28,7 +31,7 @@ mixin class BaseFeatureCamera {
     _cameraAvailable.addAll(camerasAvailable);
   }
 
-  Future<CameraDescription?> _getCameraBasedOnFacingType(FeatureCameraFacingType facingType) async {
+  Future<CameraDescription?> _getCameraBasedOnFacingType(CameraLensDirection cameraLensDirection) async {
     if (_cameraAvailable.isEmpty) {
       await _initCameraAvailable();
     }
@@ -43,27 +46,28 @@ mixin class BaseFeatureCamera {
     return selectedCameraDescription;
   }
 
-  Future<bool> isCameraAvailable(FeatureCameraFacingType facingType) async {
-    return await _getCameraBasedOnFacingType(facingType) != null;
+  Future<bool> isCameraAvailable(CameraLensDirection cameraLensDirection) async {
+    return await _getCameraBasedOnFacingType(cameraLensDirection) != null;
   }
 
-  Future<void> initializeCamera({required FeatureCameraFacingType facingType}) async {
+  Future<void> initializeCamera({required CameraLensDirection cameraLensDirection}) async {
     if (_cameraAvailable.isEmpty) {
       await _initCameraAvailable();
     }
 
-    cameraFacingType = facingType;
-    cameraLensDirection = switch (facingType) {
-      FeatureCameraFacingType.front => CameraLensDirection.front,
-      FeatureCameraFacingType.back => CameraLensDirection.back,
-    };
+    if (_tempOnCameraInitialized != null) {
+      _onCameraInitialized = _tempOnCameraInitialized;
+      _tempOnCameraInitialized = null;
+    }
 
-    CameraDescription? selectedCameraDescription = await _getCameraBasedOnFacingType(cameraFacingType);
+    currentCameraLensDirection = cameraLensDirection;
+    CameraDescription? selectedCameraDescription = await _getCameraBasedOnFacingType(cameraLensDirection);
 
     if (selectedCameraDescription == null) {
-      log("no camera with $facingType available");
+      log("no camera with $cameraLensDirection available");
       return;
     }
+    log("initialized camera with $cameraLensDirection");
 
     cameraController = CameraController(selectedCameraDescription, ResolutionPreset.high);
     cameraController!.initialize().then((_) {
@@ -105,7 +109,7 @@ mixin class BaseFeatureCamera {
       _tempOnCameraInitializedFailure = null;
     }
 
-    return initializeCamera(facingType: cameraFacingType);
+    return initializeCamera(cameraLensDirection: currentCameraLensDirection);
   }
 
   void Function()? _tempOnCameraInitialized;
@@ -121,12 +125,36 @@ mixin class BaseFeatureCamera {
     cameraController = null;
   }
 
-  Future<XFile?> takePicture() async {
+  FlashMode currentFlashMode = FlashMode.off;
+
+  Future<void> setFlashMode(FlashMode flashMode) async {
+    if (currentFlashMode == flashMode) {
+      log("flash mode same with current condition");
+      return;
+    }
+    await cameraController?.setFlashMode(flashMode);
+    currentFlashMode = flashMode;
+    log("successfully update flashMode to $flashMode");
+    if (_onFlashModeChanged != null) {
+      _onFlashModeChanged?.call(flashMode);
+    }
+  }
+
+  Future<File?> takePicture() async {
     if (cameraController == null) {
       log("unable to takePicture, cameraController missing");
       return null;
     }
-    return cameraController?.takePicture();
+    final xFile = await cameraController?.takePicture();
+    if (xFile == null) return null;
+    final newFile = File(xFile.path);
+    if (Platform.isIOS) return newFile;
+    final imageBytes = await xFile.readAsBytes();
+    final originalImage = image_lib.decodeImage(imageBytes);
+    if (originalImage == null) return null;
+    final fixedImage = image_lib.flipHorizontal(originalImage);
+    await newFile.writeAsBytes(image_lib.encodeJpg(fixedImage), flush: true);
+    return newFile;
   }
 
   Timer? timer;

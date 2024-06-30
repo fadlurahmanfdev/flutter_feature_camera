@@ -1,3 +1,0 @@
-enum FeatureCameraFacingType {
-  front, back,
-}
