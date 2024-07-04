@@ -5,14 +5,14 @@ import 'package:example/presentation/widget/camera_control_layout_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_feature_camera/flutter_feature_camera.dart';
 
-class CaptureImagePage extends StatefulWidget {
-  const CaptureImagePage({super.key});
+class CameraIdCardPage extends StatefulWidget {
+  const CameraIdCardPage({super.key});
 
   @override
-  State<CaptureImagePage> createState() => _CaptureImagePageState();
+  State<CameraIdCardPage> createState() => _CameraIdCardPageState();
 }
 
-class _CaptureImagePageState extends State<CaptureImagePage> with BaseFeatureCamera {
+class _CameraIdCardPageState extends State<CameraIdCardPage> with BaseFeatureCamera {
   @override
   void initState() {
     super.initState();
@@ -37,7 +37,7 @@ class _CaptureImagePageState extends State<CaptureImagePage> with BaseFeatureCam
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Camera Capture", style: TextStyle(color: Colors.black)),
+        title: const Text("Camera ID Card Page", style: TextStyle(color: Colors.black)),
       ),
       body: Stack(
         children: [
@@ -45,15 +45,21 @@ class _CaptureImagePageState extends State<CaptureImagePage> with BaseFeatureCam
             alignment: Alignment.center,
             child: cameraController?.value.isInitialized == true ? CameraPreview(cameraController!) : Container(),
           ),
+          IgnorePointer(
+            child: ClipPath(
+              clipper: RectangleClipper(),
+              child: CustomPaint(
+                painter: RectanglePainter(),
+                child: Container(
+                  color: Colors.black.withOpacity(0.8),
+                ),
+              ),
+            ),
+          ),
           Align(
             alignment: Alignment.bottomCenter,
             child: CameraControlLayoutWidget(
-              flashIcon: switch (currentFlashMode) {
-                FlashMode.off => Icon(Icons.flash_off),
-                FlashMode.auto => Icon(Icons.flash_auto),
-                FlashMode.always => Icon(Icons.flash_on),
-                FlashMode.torch => Icon(Icons.flash_on),
-              },
+              flashIcon: Icon(Icons.flash_off),
               onFlashTap: onFlashTap,
               captureIcon: Icon(Icons.camera_alt),
               onCaptureTap: onCaptureTap,
@@ -78,20 +84,7 @@ class _CaptureImagePageState extends State<CaptureImagePage> with BaseFeatureCam
     });
   }
 
-  void onFlashTap() {
-    if (currentFlashMode == FlashMode.off) {
-      setFlashMode(FlashMode.always);
-    } else {
-      setFlashMode(FlashMode.off);
-    }
-  }
+  void onFlashTap() {}
 
-  void onSwitchCameraTap() {
-    disposeCamera();
-    if (currentCameraLensDirection == CameraLensDirection.back) {
-      initializeCamera(cameraLensDirection: CameraLensDirection.front);
-    } else {
-      initializeCamera(cameraLensDirection: CameraLensDirection.back);
-    }
-  }
+  void onSwitchCameraTap() {}
 }

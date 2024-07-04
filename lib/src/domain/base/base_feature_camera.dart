@@ -152,6 +152,7 @@ mixin class BaseFeatureCamera {
     final imageBytes = await xFile.readAsBytes();
     final originalImage = image_lib.decodeImage(imageBytes);
     if (originalImage == null) return null;
+    if(currentCameraLensDirection == CameraLensDirection.back) return newFile;
     final fixedImage = image_lib.flipHorizontal(originalImage);
     await newFile.writeAsBytes(image_lib.encodeJpg(fixedImage), flush: true);
     return newFile;

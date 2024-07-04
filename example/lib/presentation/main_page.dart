@@ -1,4 +1,5 @@
 import 'package:example/data/dto/model/feature_model.dart';
+import 'package:example/presentation/camera_id_card_page.dart';
 import 'package:example/presentation/camera_selfie_page.dart';
 import 'package:example/presentation/capture_image_page.dart';
 import 'package:example/presentation/stream_camera_page.dart';
@@ -29,6 +30,11 @@ class _MainPageState extends State<MainPage> {
       desc: 'Selfie Camera',
       key: 'SELFIE_CAMERA',
     ),
+    FeatureModel(
+      title: 'ID Card Camera',
+      desc: 'ID Card Camera',
+      key: 'ID_CARD_CAMERA',
+    ),
   ];
 
   @override
@@ -57,6 +63,9 @@ class _MainPageState extends State<MainPage> {
                   break;
                 case "SELFIE_CAMERA":
                   Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CameraSelfiePage()));
+                  break;
+                case "ID_CARD_CAMERA":
+                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CameraIdCardPage()));
                   break;
               }
             },
