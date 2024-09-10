@@ -4,14 +4,14 @@ import 'package:example/presentation/widget/camera_control_layout_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_feature_camera/flutter_feature_camera.dart';
 
-class CameraSelfiePage extends StatefulWidget {
-  const CameraSelfiePage({super.key});
+class CameraSelfiePageV2 extends StatefulWidget {
+  const CameraSelfiePageV2({super.key});
 
   @override
-  State<CameraSelfiePage> createState() => _CameraSelfiePageState();
+  State<CameraSelfiePageV2> createState() => _CameraSelfiePageV2State();
 }
 
-class _CameraSelfiePageState extends State<CameraSelfiePage> with BaseMixinFeatureCameraV2 {
+class _CameraSelfiePageV2State extends State<CameraSelfiePageV2> with BaseMixinFeatureCameraV2 {
   @override
   void initState() {
     super.initState();
@@ -51,14 +51,11 @@ class _CameraSelfiePageState extends State<CameraSelfiePage> with BaseMixinFeatu
             child: cameraController?.value.isInitialized == true ? CameraPreview(cameraController!) : Container(),
           ),
           IgnorePointer(
-            child: ClipPath(
-              clipper: CircleClipper(),
-              child: CustomPaint(
-                painter: CirclePainter(),
-                child: Container(
-                  color: Colors.black.withOpacity(0.8),
-                ),
-              ),
+            child: CustomPaint(
+              painter: CirclePainterV2(
+                circleRadius: (Size size) => (size.width / 2.5)
+              ), // Painter for black overlay with a transparent circle
+              child: Container(),
             ),
           ),
           Align(
