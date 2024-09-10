@@ -16,16 +16,16 @@ class _CameraIdCardPageV2State extends State<CameraIdCardPageV2> with BaseMixinF
   @override
   void initState() {
     super.initState();
-    addListener(
-      onFlashModeChanged: (flashMode) {
-        setState(() {});
-      },
-    );
+    addListener(onFlashModeChanged: onFlashModeChanged);
     initializeCamera(
       cameraLensDirection: CameraLensDirection.back,
       onCameraInitialized: onCameraInitialized,
       onCameraInitializedFailure: onCameraInitializedFailure,
     );
+  }
+
+  void onFlashModeChanged(FlashMode flashMode){
+    setState(() {});
   }
 
   void onCameraInitialized(_) {
@@ -61,7 +61,11 @@ class _CameraIdCardPageV2State extends State<CameraIdCardPageV2> with BaseMixinF
           Align(
             alignment: Alignment.bottomCenter,
             child: CameraControlLayoutWidget(
-              flashIcon: Icon(Icons.flash_off),
+              flashIcon: currentFlashMode == FlashMode.always
+                  ? Icon(Icons.flash_on)
+                  : currentFlashMode == FlashMode.torch
+                      ? Icon(Icons.flashlight_on)
+                      : Icon(Icons.flash_off),
               onFlashTap: onFlashTap,
               captureIcon: Icon(Icons.camera_alt),
               onCaptureTap: onCaptureTap,
@@ -86,7 +90,36 @@ class _CameraIdCardPageV2State extends State<CameraIdCardPageV2> with BaseMixinF
     });
   }
 
-  void onFlashTap() {}
+  Future<void> onFlashTap() async {
+    switch (currentFlashMode) {
+      case FlashMode.off:
+        setState(() {
+          setFlashMode(FlashMode.always);
+        });
+        break;
+      case FlashMode.always:
+        setState(() {
+          setFlashMode(FlashMode.torch);
+        });
+        break;
+      case FlashMode.torch:
+        setState(() {
+          setFlashMode(FlashMode.off);
+        });
+        break;
+      default:
+        break;
+    }
+  }
 
-  void onSwitchCameraTap() {}
+  Future<void> onSwitchCameraTap() async {
+    switch (currentCameraLensDirection) {
+      case CameraLensDirection.front:
+        switchCamera(CameraLensDirection.back);
+      case CameraLensDirection.back:
+        switchCamera(CameraLensDirection.front);
+      default:
+        break;
+    }
+  }
 }

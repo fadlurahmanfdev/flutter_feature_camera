@@ -47,18 +47,7 @@ mixin class BaseMixinFeatureCameraV2 {
     return await _getCameraBasedOnFacingType(cameraLensDirection) != null;
   }
 
-  Future<void> initializeCamera({
-    required CameraLensDirection cameraLensDirection,
-    required void Function(CameraController controller) onCameraInitialized,
-    void Function(FeatureCameraException exception)? onCameraInitializedFailure,
-  }) async {
-    _onCameraInitialized = onCameraInitialized;
-    _onCameraInitializedFailure = onCameraInitializedFailure;
-
-    if (_cameraAvailable.isEmpty) {
-      await _initCameraAvailable();
-    }
-
+  Future<void> _initializeCameraController(CameraLensDirection cameraLensDirection) async {
     CameraDescription? selectedCameraDescription = await _getCameraBasedOnFacingType(cameraLensDirection);
 
     if (selectedCameraDescription == null) {
@@ -92,10 +81,50 @@ mixin class BaseMixinFeatureCameraV2 {
             break;
         }
       } else {
-        _onCameraInitializedFailure
-            ?.call(FeatureCameraException(code: EnumFeatureCameraException.other.name, message: 'other exception: $e'));
+        _onCameraInitializedFailure?.call(FeatureCameraException(
+          code: EnumFeatureCameraException.other.name,
+          message: 'other exception: $e',
+        ));
       }
     });
+  }
+
+  Future<void> initializeCamera({
+    required CameraLensDirection cameraLensDirection,
+    required void Function(CameraController controller) onCameraInitialized,
+    void Function(FeatureCameraException exception)? onCameraInitializedFailure,
+  }) async {
+    _onCameraInitialized = onCameraInitialized;
+    _onCameraInitializedFailure = onCameraInitializedFailure;
+
+    if (_cameraAvailable.isEmpty) {
+      await _initCameraAvailable();
+    }
+
+    _initializeCameraController(cameraLensDirection);
+  }
+
+  Future<void> switchCamera(CameraLensDirection cameraLensDirection) async {
+    if (cameraController == null || _onCameraInitialized == null || _onCameraInitializedFailure == null) {
+      log("failed to switch camera, camera didn't start yet");
+      return;
+    }
+
+    if (cameraController?.value.isInitialized != true) {
+      log("failed to switch camera, camera not yet initialized");
+      return;
+    }
+
+    if (currentCameraLensDirection == cameraLensDirection) {
+      log("cameraLensDirection already $cameraLensDirection");
+      return;
+    }
+
+    if (currentFlashMode != FlashMode.off) {
+      await setFlashMode(FlashMode.off);
+    }
+
+    _initializeCameraController(cameraLensDirection);
   }
 
   Future<void> resumeCamera({
@@ -109,7 +138,14 @@ mixin class BaseMixinFeatureCameraV2 {
     );
   }
 
-  void disposeCamera() {
+  Future<void> disposeCamera() async {
+    if (currentFlashMode != FlashMode.off) {
+      await setFlashMode(FlashMode.off);
+    }
+
+    _onCameraInitialized = null;
+    _onCameraInitializedFailure = null;
+
     cameraController?.dispose();
     cameraController = null;
   }
