@@ -2,17 +2,18 @@ import 'dart:convert';
 
 import 'package:example/presentation/camera_selfie_page.dart';
 import 'package:example/presentation/camera_selfie_page_v2.dart';
+import 'package:example/presentation/camera_id_card_page_v2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_feature_camera/flutter_feature_camera.dart';
 
-class PreviewSelfiePageV2 extends StatefulWidget {
-  const PreviewSelfiePageV2({super.key});
+class PreviewIdCardPage2 extends StatefulWidget {
+  const PreviewIdCardPage2({super.key});
 
   @override
-  State<PreviewSelfiePageV2> createState() => _PreviewSelfiePageV2State();
+  State<PreviewIdCardPage2> createState() => _PreviewIdCardPage2State();
 }
 
-class _PreviewSelfiePageV2State extends State<PreviewSelfiePageV2> {
+class _PreviewIdCardPage2State extends State<PreviewIdCardPage2> {
   String? base64Image;
 
   @override
@@ -20,7 +21,7 @@ class _PreviewSelfiePageV2State extends State<PreviewSelfiePageV2> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CameraSelfiePageV2())).then((value) {
+      Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CameraIdCardPageV2())).then((value) {
         if (value is String) {
           if (context.mounted) {
             setState(() {
@@ -59,7 +60,7 @@ class _PreviewSelfiePageV2State extends State<PreviewSelfiePageV2> {
               Image.memory(base64.decode(base64Image ?? ''), fit: BoxFit.cover),
               IgnorePointer(
                 child: CustomPaint(
-                  painter: CirclePainterV2(),
+                  painter: RectanglePainterV2(),
                   child: Container(),
                 ),
               ),

@@ -7,14 +7,19 @@ class CirclePainterV2 extends CustomPainter {
   double progress = 0.0;
 
   // style
-  Color borderColor = Colors.white;
+  double strokeWidth = 2.0;
+
+  Color strokeColor = Colors.white;
+  Color? overlayColor;
   Color progressColor = Colors.green;
 
   CirclePainterV2({
     this.topMargin,
     this.circleRadius,
     this.progress = 0.0,
-    this.borderColor = Colors.white,
+    this.strokeWidth = 2.0,
+    this.strokeColor = Colors.white,
+    this.overlayColor,
     this.progressColor = Colors.green,
   });
 
@@ -37,9 +42,10 @@ class CirclePainterV2 extends CustomPainter {
       ..addRect(Rect.fromLTWH(0, 0, size.width, size.height))
       ..fillType = PathFillType.evenOdd;
 
+    final overlayColor = this.overlayColor ?? Colors.black.withOpacity(0.7);
     final overlayPaint = Paint()
       ..style = PaintingStyle.fill
-      ..color = Colors.black.withOpacity(0.5); // semi-transparent black overlay
+      ..color = overlayColor;
 
     canvas.drawPath(overlayPath, overlayPaint);
 
@@ -55,8 +61,8 @@ class CirclePainterV2 extends CustomPainter {
 
     final strokePaint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 5
-      ..color = borderColor; // white stroke
+      ..strokeWidth = strokeWidth
+      ..color = strokeColor; // white stroke
 
     canvas.drawPath(strokePath, strokePaint);
 
@@ -73,10 +79,10 @@ class CirclePainterV2 extends CustomPainter {
 
       final strokeProgressPaint = Paint()
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 5
+        ..strokeWidth = strokeWidth
         ..color = progressColor;
 
-      final progress = this.progress! * 4; // 4 means full of circle, 2 means half of circle, 1 means quarter of circle
+      final progress = this.progress * 4; // 4 means full of circle, 2 means half of circle, 1 means quarter of circle
       // Draw only a portion of the circle, progress defines how much
       canvas.drawArc(
         progressRect,
