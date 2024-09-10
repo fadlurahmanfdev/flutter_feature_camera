@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class CircleClipper extends CustomClipper<Path> {
   double? topMargin;
 
+  @Deprecated('use CirclePainterV2 instead')
   CircleClipper({
     this.topMargin,
   });
