@@ -12,16 +12,22 @@ class CameraSelfiePage extends StatefulWidget {
   State<CameraSelfiePage> createState() => _CameraSelfiePageState();
 }
 
-class _CameraSelfiePageState extends State<CameraSelfiePage> with BaseFeatureCamera {
+class _CameraSelfiePageState extends State<CameraSelfiePage> with BaseMixinFeatureCamera {
+  late CameraController cameraControllerv2;
   @override
   void initState() {
     super.initState();
-    addListener(onCameraInitialized: () {
-      setState(() {});
-    }, onFlashModeChanged: (flashMode) {
-      print("masuk flash mode: $flashMode");
-      setState(() {});
-    });
+    addListener(
+      onCameraInitialized: (controller) {
+        setState(() {
+          cameraControllerv2 = controller;
+        });
+      },
+      onFlashModeChanged: (flashMode) {
+        print("masuk flash mode: $flashMode");
+        setState(() {});
+      },
+    );
     initializeCamera(cameraLensDirection: CameraLensDirection.front);
   }
 

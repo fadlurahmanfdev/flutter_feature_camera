@@ -12,12 +12,12 @@ class CameraIdCardPage extends StatefulWidget {
   State<CameraIdCardPage> createState() => _CameraIdCardPageState();
 }
 
-class _CameraIdCardPageState extends State<CameraIdCardPage> with BaseFeatureCamera {
+class _CameraIdCardPageState extends State<CameraIdCardPage> with BaseMixinFeatureCamera {
   @override
   void initState() {
     super.initState();
     addListener(
-      onCameraInitialized: () {
+      onCameraInitialized: (_) {
         setState(() {});
       },
       onFlashModeChanged: (flashMode) {

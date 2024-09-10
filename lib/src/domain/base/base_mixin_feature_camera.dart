@@ -3,21 +3,22 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:flutter_feature_camera/src/data/enum/enum_feature_camera_exception.dart';
 import 'package:flutter_feature_camera/src/data/exception/feature_camera_exception.dart';
 import 'package:image/image.dart' as image_lib;
 
-mixin class BaseFeatureCamera {
+mixin class BaseMixinFeatureCamera {
   CameraController? cameraController;
 
   final List<CameraDescription> _cameraAvailable = [];
   late CameraLensDirection currentCameraLensDirection;
 
-  void Function()? _onCameraInitialized;
+  void Function(CameraController controller)? _onCameraInitialized;
   void Function(FeatureCameraException exception)? _onCameraInitializedFailure;
   void Function(FlashMode mode)? _onFlashModeChanged;
 
   void addListener({
-    required void Function() onCameraInitialized,
+    required void Function(CameraController controller) onCameraInitialized,
     void Function(FeatureCameraException exception)? onCameraInitializedFailure,
     void Function(FlashMode mode)? onFlashModeChanged,
   }) {
@@ -71,14 +72,14 @@ mixin class BaseFeatureCamera {
 
     cameraController = CameraController(selectedCameraDescription, ResolutionPreset.high);
     cameraController!.initialize().then((_) {
-      _onCameraInitialized?.call();
+      _onCameraInitialized?.call(cameraController!);
     }).catchError((e) {
       if (e is CameraException) {
         switch (e.code) {
           case 'CameraAccessDenied':
             _onCameraInitializedFailure?.call(
               FeatureCameraException(
-                code: 'PERMISSION',
+                code: EnumFeatureCameraException.permission.name,
                 message: 'give app access to camera permission',
               ),
             );
@@ -86,7 +87,7 @@ mixin class BaseFeatureCamera {
           default:
             _onCameraInitializedFailure?.call(
               FeatureCameraException(
-                code: 'CAMERA_EXCEPTION',
+                code: EnumFeatureCameraException.other.name,
                 message: 'code: ${e.code}, message: ${e.description}',
               ),
             );
@@ -112,7 +113,7 @@ mixin class BaseFeatureCamera {
     return initializeCamera(cameraLensDirection: currentCameraLensDirection);
   }
 
-  void Function()? _tempOnCameraInitialized;
+  void Function(CameraController controller)? _tempOnCameraInitialized;
   void Function(FeatureCameraException exception)? _tempOnCameraInitializedFailure;
 
   void disposeCamera() {

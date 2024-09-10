@@ -1,0 +1,4 @@
+enum EnumFeatureCameraException {
+ permission,
+ other,
+}

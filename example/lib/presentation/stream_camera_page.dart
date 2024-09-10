@@ -11,7 +11,7 @@ class StreamCameraPage extends StatefulWidget {
   State<StreamCameraPage> createState() => _StreamCameraPageState();
 }
 
-class _StreamCameraPageState extends State<StreamCameraPage> with BaseFeatureCamera {
+class _StreamCameraPageState extends State<StreamCameraPage> with BaseMixinFeatureCamera {
   @override
   void initState() {
     // TODO: implement initState
@@ -59,7 +59,7 @@ class _StreamCameraPageState extends State<StreamCameraPage> with BaseFeatureCam
     );
   }
 
-  void onCameraInitialized() {
+  void onCameraInitialized(CameraController controller) {
     setState(() {});
   }
 

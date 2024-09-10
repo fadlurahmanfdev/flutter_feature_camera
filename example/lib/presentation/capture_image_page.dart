@@ -12,12 +12,12 @@ class CaptureImagePage extends StatefulWidget {
   State<CaptureImagePage> createState() => _CaptureImagePageState();
 }
 
-class _CaptureImagePageState extends State<CaptureImagePage> with BaseFeatureCamera {
+class _CaptureImagePageState extends State<CaptureImagePage> with BaseMixinFeatureCamera {
   @override
   void initState() {
     super.initState();
     addListener(
-      onCameraInitialized: () {
+      onCameraInitialized: (_) {
         setState(() {});
       },
       onFlashModeChanged: (flashMode) {
