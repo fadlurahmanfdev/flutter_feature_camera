@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+@Deprecated('use RectanglePainterV2 instead')
 class RectangleClipper extends CustomClipper<Path> {
   double? topMargin;
 
+  @Deprecated('use RectanglePainterV2 instead')
   RectangleClipper({
     this.topMargin,
   });

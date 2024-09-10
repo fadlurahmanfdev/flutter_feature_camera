@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+@Deprecated('use CirclePainterV2 instead')
 class CirclePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {

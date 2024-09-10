@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:example/presentation/preview_image_page.dart';
 import 'package:example/presentation/widget/camera_control_layout_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_feature_camera/flutter_feature_camera.dart';
@@ -12,17 +11,25 @@ class CameraSelfiePage extends StatefulWidget {
   State<CameraSelfiePage> createState() => _CameraSelfiePageState();
 }
 
-class _CameraSelfiePageState extends State<CameraSelfiePage> with BaseFeatureCamera {
+class _CameraSelfiePageState extends State<CameraSelfiePage> with BaseMixinFeatureCameraV2 {
   @override
   void initState() {
     super.initState();
-    addListener(onCameraInitialized: () {
-      setState(() {});
-    }, onFlashModeChanged: (flashMode) {
-      print("masuk flash mode: $flashMode");
-      setState(() {});
-    });
-    initializeCamera(cameraLensDirection: CameraLensDirection.front);
+    addListener(
+      onFlashModeChanged: onFlashModeChanged,
+    );
+    initializeCamera(
+      cameraLensDirection: CameraLensDirection.front,
+      onCameraInitialized: onCameraInitialized,
+    );
+  }
+
+  void onFlashModeChanged(FlashMode flashMode) {
+    setState(() {});
+  }
+
+  void onCameraInitialized(_) {
+    setState(() {});
   }
 
   @override
@@ -76,7 +83,7 @@ class _CameraSelfiePageState extends State<CameraSelfiePage> with BaseFeatureCam
       if (bytes != null) {
         final base64Encode = base64.encode(bytes);
         if (mounted) {
-          Navigator.of(context).push(MaterialPageRoute(builder: (_) => PreviewImagePage(base64Image: base64Encode)));
+          Navigator.of(context).pop(base64Encode);
         }
       }
     });

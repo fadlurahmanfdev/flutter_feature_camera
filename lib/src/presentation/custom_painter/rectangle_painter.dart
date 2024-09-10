@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+@Deprecated('use RectanglePainterV2 instead')
 class RectanglePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {

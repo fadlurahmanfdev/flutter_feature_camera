@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+@Deprecated('use CirclePainterV2 instead')
 class CircleClipper extends CustomClipper<Path> {
   double? topMargin;
 
+  @Deprecated('use CirclePainterV2 instead')
   CircleClipper({
     this.topMargin,
   });
@@ -23,5 +25,5 @@ class CircleClipper extends CustomClipper<Path> {
   }
 
   @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+  bool shouldReclip(CustomClipper<Path> oldClipper) => true;
 }

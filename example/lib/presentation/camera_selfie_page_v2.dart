@@ -1,30 +1,35 @@
 import 'dart:convert';
 
-import 'package:example/presentation/preview_image_page.dart';
 import 'package:example/presentation/widget/camera_control_layout_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_feature_camera/flutter_feature_camera.dart';
 
-class CameraIdCardPage extends StatefulWidget {
-  const CameraIdCardPage({super.key});
+class CameraSelfiePageV2 extends StatefulWidget {
+  const CameraSelfiePageV2({super.key});
 
   @override
-  State<CameraIdCardPage> createState() => _CameraIdCardPageState();
+  State<CameraSelfiePageV2> createState() => _CameraSelfiePageV2State();
 }
 
-class _CameraIdCardPageState extends State<CameraIdCardPage> with BaseMixinFeatureCamera {
+class _CameraSelfiePageV2State extends State<CameraSelfiePageV2> with BaseMixinFeatureCameraV2 {
   @override
   void initState() {
     super.initState();
     addListener(
-      onCameraInitialized: (_) {
-        setState(() {});
-      },
-      onFlashModeChanged: (flashMode) {
-        setState(() {});
-      },
+      onFlashModeChanged: onFlashModeChanged,
     );
-    initializeCamera(cameraLensDirection: CameraLensDirection.back);
+    initializeCamera(
+      cameraLensDirection: CameraLensDirection.front,
+      onCameraInitialized: onCameraInitialized,
+    );
+  }
+
+  void onFlashModeChanged(FlashMode flashMode) {
+    setState(() {});
+  }
+
+  void onCameraInitialized(_) {
+    setState(() {});
   }
 
   @override
@@ -37,7 +42,7 @@ class _CameraIdCardPageState extends State<CameraIdCardPage> with BaseMixinFeatu
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Camera ID Card Page", style: TextStyle(color: Colors.black)),
+        title: const Text("Camera Selfie", style: TextStyle(color: Colors.black)),
       ),
       body: Stack(
         children: [
@@ -46,14 +51,11 @@ class _CameraIdCardPageState extends State<CameraIdCardPage> with BaseMixinFeatu
             child: cameraController?.value.isInitialized == true ? CameraPreview(cameraController!) : Container(),
           ),
           IgnorePointer(
-            child: ClipPath(
-              clipper: RectangleClipper(),
-              child: CustomPaint(
-                painter: RectanglePainter(),
-                child: Container(
-                  color: Colors.black.withOpacity(0.8),
-                ),
-              ),
+            child: CustomPaint(
+              painter: CirclePainterV2(
+                circleRadius: (Size size) => (size.width / 2.5),
+              ), // Painter for black overlay with a transparent circle
+              child: Container(),
             ),
           ),
           Align(
@@ -78,7 +80,7 @@ class _CameraIdCardPageState extends State<CameraIdCardPage> with BaseMixinFeatu
       if (bytes != null) {
         final base64Encode = base64.encode(bytes);
         if (mounted) {
-          Navigator.of(context).push(MaterialPageRoute(builder: (_) => PreviewImagePage(base64Image: base64Encode)));
+          Navigator.of(context).pop(base64Encode);
         }
       }
     });
