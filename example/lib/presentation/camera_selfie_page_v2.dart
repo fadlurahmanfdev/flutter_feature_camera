@@ -53,7 +53,7 @@ class _CameraSelfiePageV2State extends State<CameraSelfiePageV2> with BaseMixinF
           IgnorePointer(
             child: CustomPaint(
               painter: CirclePainterV2(
-                circleRadius: (Size size) => (size.width / 2.5)
+                circleRadius: (Size size) => (size.width / 2.5),
               ), // Painter for black overlay with a transparent circle
               child: Container(),
             ),

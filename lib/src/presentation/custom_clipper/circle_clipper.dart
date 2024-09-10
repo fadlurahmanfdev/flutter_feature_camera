@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+@Deprecated('use CirclePainterV2 instead')
 class CircleClipper extends CustomClipper<Path> {
   double? topMargin;
 

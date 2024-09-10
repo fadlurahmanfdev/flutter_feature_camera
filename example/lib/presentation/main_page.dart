@@ -33,8 +33,8 @@ class _MainPageState extends State<MainPage> {
       key: 'SELFIE_CAMERA',
     ),
     FeatureModel(
-      title: 'Selfie Camera',
-      desc: 'Selfie Camera',
+      title: 'Selfie Camera V2',
+      desc: 'Selfie Camera V2',
       key: 'SELFIE_CAMERA_V2',
     ),
     FeatureModel(
