@@ -1,6 +1,6 @@
 name: flutter_feature_camera
 description: "Camera Package from fadlurahmanfdev"
-version: 0.0.1
+version: 0.0.1-beta
 publish_to: none
 
 environment:
