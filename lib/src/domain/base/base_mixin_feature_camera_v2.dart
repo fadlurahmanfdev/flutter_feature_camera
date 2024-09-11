@@ -7,16 +7,28 @@ import 'package:flutter_feature_camera/src/data/enum/enum_feature_camera_excepti
 import 'package:flutter_feature_camera/src/data/exception/feature_camera_exception.dart';
 import 'package:image/image.dart' as image_lib;
 
+/// BaseMixinFeatureCameraV2 is a mixin abstract class designed to facilitate camera-related functionalities.
+/// It provides methods for handling essential camera features, such as initializing the camera, taking pictures,
+/// switching between cameras, setting flash modes, starting and stopping image streams, and more.
+///
+/// This mixin can be used in widgets or classes where camera functionality is required, allowing for
+/// streamlined integration of camera operations in Flutter applications.
 mixin class BaseMixinFeatureCameraV2 {
+  /// The current [CameraController] to control the camera hardware.
   CameraController? cameraController;
 
   final List<CameraDescription> _cameraAvailable = [];
+
+  /// The direction of the currently active camera (front or back).
   late CameraLensDirection currentCameraLensDirection;
 
   void Function(CameraController controller)? _onCameraInitialized;
   void Function(FeatureCameraException exception)? _onCameraInitializedFailure;
   void Function(FlashMode mode)? _onFlashModeChanged;
 
+  /// Registers event listeners for camera features.
+  ///
+  /// - [onFlashModeChanged] is triggered when the flash mode is changed.
   void addListener({
     void Function(FlashMode mode)? onFlashModeChanged,
   }) {
@@ -43,6 +55,15 @@ mixin class BaseMixinFeatureCameraV2 {
     return selectedCameraDescription;
   }
 
+  /// Checks if a camera with the specified [cameraLensDirection] is available.
+  ///
+  /// This method returns `true` if a camera matching the given direction is found,
+  /// and `false` if no such camera is available.
+  ///
+  /// Example usage:
+  /// ```dart
+  /// bool isAvailable = await isCameraAvailable(CameraLensDirection.front);
+  /// ```
   Future<bool> isCameraAvailable(CameraLensDirection cameraLensDirection) async {
     return await _getCameraBasedOnFacingType(cameraLensDirection) != null;
   }
@@ -88,7 +109,11 @@ mixin class BaseMixinFeatureCameraV2 {
       }
     });
   }
-
+  /// Initializes the camera with the specified [CameraLensDirection] and handles success or failure callbacks.
+  ///
+  /// - [cameraLensDirection] specifies whether to use the front or rear camera.
+  /// - [onCameraInitialized] is called when the camera is successfully initialized.
+  /// - [onCameraInitializedFailure] is called when the camera fails to initialize.
   Future<void> initializeCamera({
     required CameraLensDirection cameraLensDirection,
     required void Function(CameraController controller) onCameraInitialized,
@@ -104,6 +129,9 @@ mixin class BaseMixinFeatureCameraV2 {
     _initializeCameraController(cameraLensDirection);
   }
 
+  /// Switches the active camera to the specified [CameraLensDirection] (front or rear).
+  ///
+  /// If the camera is not initialized or the selected camera is already active, the function will log an error.
   Future<void> switchCamera(CameraLensDirection cameraLensDirection) async {
     if (cameraController == null || _onCameraInitialized == null || _onCameraInitializedFailure == null) {
       log("failed to switch camera, camera didn't start yet");
@@ -127,6 +155,10 @@ mixin class BaseMixinFeatureCameraV2 {
     _initializeCameraController(cameraLensDirection);
   }
 
+  /// Resumes the camera with the last-used [CameraLensDirection] and initializes it.
+  ///
+  /// - [onCameraInitialized] is called when the camera is successfully initialized.
+  /// - [onCameraInitializedFailure] is called when the camera fails to initialize.
   Future<void> resumeCamera({
     required void Function(CameraController controller) onCameraInitialized,
     void Function(FeatureCameraException exception)? onCameraInitializedFailure,
@@ -138,6 +170,7 @@ mixin class BaseMixinFeatureCameraV2 {
     );
   }
 
+  /// Disposes the active camera and resets flash mode to off.
   Future<void> disposeCamera() async {
     if (currentFlashMode != FlashMode.off) {
       await setFlashMode(FlashMode.off);
@@ -150,8 +183,12 @@ mixin class BaseMixinFeatureCameraV2 {
     cameraController = null;
   }
 
+  /// The current flash mode of the camera (on, off, auto, etc.).
   FlashMode currentFlashMode = FlashMode.off;
 
+  /// Sets the camera's flash mode to the specified [flashMode] (off, on, auto, etc.).
+  ///
+  /// - If the current flash mode is already the desired one, no action is taken.
   Future<void> setFlashMode(FlashMode flashMode) async {
     if (currentFlashMode == flashMode) {
       log("flash mode same with current condition");
@@ -165,6 +202,9 @@ mixin class BaseMixinFeatureCameraV2 {
     }
   }
 
+  /// Captures a picture using the active camera and returns the file.
+  ///
+  /// - If the camera controller is not initialized, this function will log an error and return null.
   Future<File?> takePicture() async {
     if (cameraController == null) {
       log("unable to takePicture, cameraController missing");
@@ -185,6 +225,9 @@ mixin class BaseMixinFeatureCameraV2 {
 
   Timer? timer;
 
+  /// Starts streaming the camera image data and triggers [onImageStream] every two seconds.
+  ///
+  /// - [onImageStream] is called with the camera image at regular intervals.
   Future<void> startImageStream({required void Function(CameraImage image) onImageStream}) async {
     if (cameraController == null) {
       log("unable to startImageStream, cameraController missing");
@@ -200,6 +243,7 @@ mixin class BaseMixinFeatureCameraV2 {
     });
   }
 
+  /// Stops the image stream from the camera.
   Future<void> stopImageStream() async {
     return cameraController?.stopImageStream();
   }
