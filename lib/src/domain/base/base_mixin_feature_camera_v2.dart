@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_feature_camera/src/data/enum/enum_feature_camera_exception.dart';
 import 'package:flutter_feature_camera/src/data/exception/feature_camera_exception.dart';
 import 'package:image/image.dart' as image_lib;
@@ -21,6 +22,7 @@ mixin class BaseMixinFeatureCameraV2 {
 
   /// The direction of the currently active camera (front or back).
   late CameraLensDirection currentCameraLensDirection;
+  late CameraDescription _cameraDescription;
 
   void Function(CameraController controller)? _onCameraInitialized;
   void Function(FeatureCameraException exception)? _onCameraInitializedFailure;
@@ -75,6 +77,9 @@ mixin class BaseMixinFeatureCameraV2 {
       log("no camera with $cameraLensDirection available");
       return;
     }
+    _cameraDescription = selectedCameraDescription;
+    log("initialized cameraDescription with $selectedCameraDescription");
+
     currentCameraLensDirection = cameraLensDirection;
     log("initialized camera with $cameraLensDirection");
 
@@ -109,6 +114,7 @@ mixin class BaseMixinFeatureCameraV2 {
       }
     });
   }
+
   /// Initializes the camera with the specified [CameraLensDirection] and handles success or failure callbacks.
   ///
   /// - [cameraLensDirection] specifies whether to use the front or rear camera.
@@ -225,18 +231,38 @@ mixin class BaseMixinFeatureCameraV2 {
 
   Timer? timer;
 
+  bool _isStartImageStream = false;
+
   /// Starts streaming the camera image data and triggers [onImageStream] every two seconds.
   ///
   /// - [onImageStream] is called with the camera image at regular intervals.
-  Future<void> startImageStream({required void Function(CameraImage image) onImageStream}) async {
+  Future<void> startImageStream({
+    required void Function(
+      CameraImage image,
+      int sensorOrientation,
+      DeviceOrientation deviceOrientation,
+    ) onImageStream,
+  }) async {
     if (cameraController == null) {
       log("unable to startImageStream, cameraController missing");
       return;
     }
+
+    if (_isStartImageStream) {
+      log("unable to startImageStream, already startImageStream");
+      return;
+    }
+
     cameraController?.startImageStream((image) {
+      _isStartImageStream = true;
+
       if (timer != null) return;
       timer = Timer(const Duration(seconds: 2), () {
-        onImageStream(image);
+        onImageStream(
+          image,
+          _cameraDescription.sensorOrientation,
+          cameraController?.value.deviceOrientation ?? DeviceOrientation.portraitUp,
+        );
         timer?.cancel();
         timer = null;
       });
@@ -245,6 +271,7 @@ mixin class BaseMixinFeatureCameraV2 {
 
   /// Stops the image stream from the camera.
   Future<void> stopImageStream() async {
+    _isStartImageStream = false;
     return cameraController?.stopImageStream();
   }
 }
