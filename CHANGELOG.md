@@ -11,3 +11,7 @@
 ## 0.0.3-beta
 
 * same like 0.0.2-beta, just for testing
+
+## 0.0.4-beta
+
+* same like 0.0.3-beta, just for testing
