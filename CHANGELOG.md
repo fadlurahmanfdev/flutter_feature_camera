@@ -7,3 +7,7 @@
 ## 0.0.2-beta
 
 * enhance stream image with deviceOrientation & sensorOrientation
+
+## 0.0.3-beta
+
+* same like 0.0.2-beta, just for testing
