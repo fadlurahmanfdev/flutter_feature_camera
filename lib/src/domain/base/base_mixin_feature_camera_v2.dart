@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_feature_camera/flutter_feature_camera.dart';
 import 'package:flutter_feature_camera/src/data/enum/enum_feature_camera_exception.dart';
 import 'package:flutter_feature_camera/src/data/exception/feature_camera_exception.dart';
 import 'package:image/image.dart' as image_lib;
@@ -23,6 +24,8 @@ mixin class BaseMixinFeatureCameraV2 {
   /// The direction of the currently active camera (front or back).
   late CameraLensDirection currentCameraLensDirection;
   late CameraDescription _cameraDescription;
+  ImageFormatGroup? _currentImageFormatGroup;
+  ResolutionPreset _currentResolutionPreset = ResolutionPreset.high;
 
   void Function(CameraController controller)? _onCameraInitialized;
   void Function(FeatureCameraException exception)? _onCameraInitializedFailure;
@@ -70,7 +73,12 @@ mixin class BaseMixinFeatureCameraV2 {
     return await _getCameraBasedOnFacingType(cameraLensDirection) != null;
   }
 
-  Future<void> _initializeCameraController(CameraLensDirection cameraLensDirection) async {
+  Future<void> _initializeCameraController({
+    required CameraLensDirection cameraLensDirection,
+    required ResolutionPreset resolutionPreset,
+    bool enableAudio = true,
+    ImageFormatGroup? imageFormatGroup,
+  }) async {
     CameraDescription? selectedCameraDescription = await _getCameraBasedOnFacingType(cameraLensDirection);
 
     if (selectedCameraDescription == null) {
@@ -83,7 +91,18 @@ mixin class BaseMixinFeatureCameraV2 {
     currentCameraLensDirection = cameraLensDirection;
     log("initialized camera with $cameraLensDirection");
 
-    cameraController = CameraController(selectedCameraDescription, ResolutionPreset.high);
+    _currentImageFormatGroup = imageFormatGroup;
+    log("initialized imageFormatGroup with $imageFormatGroup");
+
+    _currentResolutionPreset = resolutionPreset;
+    log("initialized resolutionPreset with: $resolutionPreset");
+
+    cameraController = CameraController(
+      selectedCameraDescription,
+      enableAudio: enableAudio,
+      resolutionPreset,
+      imageFormatGroup: imageFormatGroup,
+    );
     cameraController!.initialize().then((_) {
       _onCameraInitialized?.call(cameraController!);
     }).catchError((e) {
@@ -124,6 +143,9 @@ mixin class BaseMixinFeatureCameraV2 {
     required CameraLensDirection cameraLensDirection,
     required void Function(CameraController controller) onCameraInitialized,
     void Function(FeatureCameraException exception)? onCameraInitializedFailure,
+    ResolutionPreset resolutionPreset = ResolutionPreset.high,
+    bool enableAudio = true,
+    ImageFormatGroup? imageFormatGroup,
   }) async {
     _onCameraInitialized = onCameraInitialized;
     _onCameraInitializedFailure = onCameraInitializedFailure;
@@ -132,7 +154,26 @@ mixin class BaseMixinFeatureCameraV2 {
       await _initCameraAvailable();
     }
 
-    _initializeCameraController(cameraLensDirection);
+    _initializeCameraController(
+      cameraLensDirection: cameraLensDirection,
+      resolutionPreset: resolutionPreset,
+      enableAudio: enableAudio,
+      imageFormatGroup: imageFormatGroup,
+    );
+  }
+
+  Future<void> initializeStreamingCamera({
+    required CameraLensDirection cameraLensDirection,
+    required void Function(CameraController controller) onCameraInitialized,
+    void Function(FeatureCameraException exception)? onCameraInitializedFailure,
+  }) async {
+    return initializeCamera(
+      cameraLensDirection: cameraLensDirection,
+      onCameraInitialized: onCameraInitialized,
+      enableAudio: false,
+      resolutionPreset: ResolutionPreset.medium,
+      imageFormatGroup: Platform.isAndroid ? ImageFormatGroup.nv21 : ImageFormatGroup.bgra8888,
+    );
   }
 
   /// Switches the active camera to the specified [CameraLensDirection] (front or rear).
@@ -158,7 +199,11 @@ mixin class BaseMixinFeatureCameraV2 {
       await setFlashMode(FlashMode.off);
     }
 
-    _initializeCameraController(cameraLensDirection);
+    _initializeCameraController(
+      cameraLensDirection: cameraLensDirection,
+      resolutionPreset: _currentResolutionPreset,
+      imageFormatGroup: _currentImageFormatGroup,
+    );
   }
 
   /// Resumes the camera with the last-used [CameraLensDirection] and initializes it.
@@ -229,9 +274,11 @@ mixin class BaseMixinFeatureCameraV2 {
     return newFile;
   }
 
-  Timer? timer;
+  Timer? _streamImageTimer;
 
-  bool _isStartImageStream = false;
+  bool _isStreamingImage = false;
+
+  bool get isStreamingImage => _isStreamingImage;
 
   /// Starts streaming the camera image data and triggers [onImageStream] every two seconds.
   ///
@@ -241,6 +288,7 @@ mixin class BaseMixinFeatureCameraV2 {
       CameraImage image,
       int sensorOrientation,
       DeviceOrientation deviceOrientation,
+      CameraLensDirection cameraLensDirection,
     ) onImageStream,
   }) async {
     if (cameraController == null) {
@@ -248,30 +296,35 @@ mixin class BaseMixinFeatureCameraV2 {
       return;
     }
 
-    if (_isStartImageStream) {
+    if (_isStreamingImage) {
       log("unable to startImageStream, already startImageStream");
       return;
     }
 
     cameraController?.startImageStream((image) {
-      _isStartImageStream = true;
+      _isStreamingImage = true;
 
-      if (timer != null) return;
-      timer = Timer(const Duration(seconds: 2), () {
+      if (_streamImageTimer != null) return;
+      _streamImageTimer = Timer(const Duration(seconds: 2), () {
         onImageStream(
           image,
           _cameraDescription.sensorOrientation,
           cameraController?.value.deviceOrientation ?? DeviceOrientation.portraitUp,
+          currentCameraLensDirection,
         );
-        timer?.cancel();
-        timer = null;
+        _streamImageTimer?.cancel();
+        _streamImageTimer = null;
       });
     });
+    log("successfully startImageStream");
   }
 
   /// Stops the image stream from the camera.
   Future<void> stopImageStream() async {
-    _isStartImageStream = false;
-    return cameraController?.stopImageStream();
+    _isStreamingImage = false;
+    _streamImageTimer?.cancel();
+    _streamImageTimer = null;
+    await cameraController?.stopImageStream();
+    log("successfully stopImageStream");
   }
 }
