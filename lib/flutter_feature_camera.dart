@@ -11,4 +11,3 @@ export 'src/presentation/custom_painter/circle_painter.dart';
 export 'src/presentation/custom_painter/circle_painter_v2.dart';
 export 'src/presentation/custom_painter/rectangle_painter.dart';
 export 'src/presentation/custom_painter/rectangle_painter_v2.dart';
-export 'package:camera/camera.dart';
