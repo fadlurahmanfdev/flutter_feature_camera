@@ -15,7 +15,7 @@ import 'package:image/image.dart' as image_lib;
 ///
 /// This mixin can be used in widgets or classes where camera functionality is required, allowing for
 /// streamlined integration of camera operations in Flutter applications.
-mixin class BaseMixinFeatureCameraV2 {
+class BaseMixinFeatureCameraV2 {
   /// The current [CameraController] to control the camera hardware.
   CameraController? cameraController;
 
