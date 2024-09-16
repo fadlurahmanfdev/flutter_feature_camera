@@ -15,3 +15,7 @@
 ## 0.0.4-beta
 
 * same like 0.0.3-beta, just for testing
+
+## 0.0.5-beta
+
+* enhance streaming camera for liveness detection
