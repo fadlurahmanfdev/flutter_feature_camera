@@ -25,11 +25,13 @@ mixin BaseMixinFeatureCameraV2 {
   /// do not forget to initialized it using [initializeCamera] or [initializeStreamingCamera]
   List<CameraDescription> get cameraAvailable => _cameraAvailable;
 
-  /// The direction of the currently active camera (front or back).
   late CameraLensDirection _cameraLensDirection;
 
+  /// The direction of the currently active camera (front or back).
   CameraLensDirection get cameraLensDirection => _cameraLensDirection;
+
   late CameraDescription _cameraDescription;
+
   ImageFormatGroup? _currentImageFormatGroup;
   ResolutionPreset _currentResolutionPreset = ResolutionPreset.high;
 
@@ -196,7 +198,7 @@ mixin BaseMixinFeatureCameraV2 {
       return;
     }
 
-    if (_cameraLensDirection == cameraLensDirection) {
+    if (this.cameraLensDirection == cameraLensDirection) {
       log("cameraLensDirection already $cameraLensDirection");
       return;
     }
@@ -221,7 +223,7 @@ mixin BaseMixinFeatureCameraV2 {
     void Function(FeatureCameraException exception)? onCameraInitializedFailure,
   }) async {
     return initializeCamera(
-      cameraLensDirection: _cameraLensDirection,
+      cameraLensDirection: cameraLensDirection,
       onCameraInitialized: onCameraInitialized,
       onCameraInitializedFailure: onCameraInitializedFailure,
     );
@@ -274,7 +276,7 @@ mixin BaseMixinFeatureCameraV2 {
     final imageBytes = await xFile.readAsBytes();
     final originalImage = image_lib.decodeImage(imageBytes);
     if (originalImage == null) return null;
-    if (_cameraLensDirection == CameraLensDirection.back) return newFile;
+    if (cameraLensDirection == CameraLensDirection.back) return newFile;
     final fixedImage = image_lib.flipHorizontal(originalImage);
     await newFile.writeAsBytes(image_lib.encodeJpg(fixedImage), flush: true);
     return newFile;
@@ -316,7 +318,7 @@ mixin BaseMixinFeatureCameraV2 {
           image,
           _cameraDescription.sensorOrientation,
           cameraController?.value.deviceOrientation ?? DeviceOrientation.portraitUp,
-          _cameraLensDirection,
+          cameraLensDirection,
         );
         _streamImageTimer?.cancel();
         _streamImageTimer = null;
