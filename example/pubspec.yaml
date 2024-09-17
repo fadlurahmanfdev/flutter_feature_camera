@@ -31,9 +31,9 @@ dependencies:
   flutter:
     sdk: flutter
 
-  flutter_feature_camera: ^0.0.2-beta
-#  flutter_feature_camera:
-#    path: ../../flutter_feature_camera
+#  flutter_feature_camera: ^0.0.2-beta
+  flutter_feature_camera:
+    path: ../
 
 
   # The following adds the Cupertino Icons font to your application.

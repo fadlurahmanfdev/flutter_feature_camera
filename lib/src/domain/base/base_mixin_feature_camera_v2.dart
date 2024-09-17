@@ -26,7 +26,9 @@ mixin BaseMixinFeatureCameraV2 {
   List<CameraDescription> get cameraAvailable => _cameraAvailable;
 
   /// The direction of the currently active camera (front or back).
-  late CameraLensDirection currentCameraLensDirection;
+  late CameraLensDirection _cameraLensDirection;
+
+  CameraLensDirection get cameraLensDirection => _cameraLensDirection;
   late CameraDescription _cameraDescription;
   ImageFormatGroup? _currentImageFormatGroup;
   ResolutionPreset _currentResolutionPreset = ResolutionPreset.high;
@@ -92,7 +94,7 @@ mixin BaseMixinFeatureCameraV2 {
     _cameraDescription = selectedCameraDescription;
     log("initialized cameraDescription with $selectedCameraDescription");
 
-    currentCameraLensDirection = cameraLensDirection;
+    _cameraLensDirection = cameraLensDirection;
     log("initialized camera with $cameraLensDirection");
 
     _currentImageFormatGroup = imageFormatGroup;
@@ -194,7 +196,7 @@ mixin BaseMixinFeatureCameraV2 {
       return;
     }
 
-    if (currentCameraLensDirection == cameraLensDirection) {
+    if (_cameraLensDirection == cameraLensDirection) {
       log("cameraLensDirection already $cameraLensDirection");
       return;
     }
@@ -219,7 +221,7 @@ mixin BaseMixinFeatureCameraV2 {
     void Function(FeatureCameraException exception)? onCameraInitializedFailure,
   }) async {
     return initializeCamera(
-      cameraLensDirection: currentCameraLensDirection,
+      cameraLensDirection: _cameraLensDirection,
       onCameraInitialized: onCameraInitialized,
       onCameraInitializedFailure: onCameraInitializedFailure,
     );
@@ -272,7 +274,7 @@ mixin BaseMixinFeatureCameraV2 {
     final imageBytes = await xFile.readAsBytes();
     final originalImage = image_lib.decodeImage(imageBytes);
     if (originalImage == null) return null;
-    if (currentCameraLensDirection == CameraLensDirection.back) return newFile;
+    if (_cameraLensDirection == CameraLensDirection.back) return newFile;
     final fixedImage = image_lib.flipHorizontal(originalImage);
     await newFile.writeAsBytes(image_lib.encodeJpg(fixedImage), flush: true);
     return newFile;
@@ -314,7 +316,7 @@ mixin BaseMixinFeatureCameraV2 {
           image,
           _cameraDescription.sensorOrientation,
           cameraController?.value.deviceOrientation ?? DeviceOrientation.portraitUp,
-          currentCameraLensDirection,
+          _cameraLensDirection,
         );
         _streamImageTimer?.cancel();
         _streamImageTimer = null;

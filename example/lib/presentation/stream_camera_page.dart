@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:example/presentation/preview_image_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_feature_camera/camera.dart';
 import 'package:flutter_feature_camera/flutter_feature_camera.dart';
 
 class StreamCameraPage extends StatefulWidget {
