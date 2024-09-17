@@ -9,7 +9,7 @@ import 'package:flutter_feature_camera/src/data/enum/enum_feature_camera_excepti
 import 'package:flutter_feature_camera/src/data/exception/feature_camera_exception.dart';
 import 'package:image/image.dart' as image_lib;
 
-/// BaseMixinFeatureCameraV2 is a mixin abstract class designed to facilitate camera-related functionalities.
+/// BaseMixinFeatureCameraV2 is a mixin class designed to facilitate camera-related functionalities.
 /// It provides methods for handling essential camera features, such as initializing the camera, taking pictures,
 /// switching between cameras, setting flash modes, starting and stopping image streams, and more.
 ///
@@ -20,6 +20,10 @@ mixin BaseMixinFeatureCameraV2 {
   CameraController? cameraController;
 
   final List<CameraDescription> _cameraAvailable = [];
+
+  /// The list of available camera.
+  /// do not forget to initialized it using [initializeCamera] or [initializeStreamingCamera]
+  List<CameraDescription> get cameraAvailable => _cameraAvailable;
 
   /// The direction of the currently active camera (front or back).
   late CameraLensDirection currentCameraLensDirection;
