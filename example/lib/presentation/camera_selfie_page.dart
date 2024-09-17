@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:example/presentation/widget/camera_control_layout_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_feature_camera/camera.dart';
 import 'package:flutter_feature_camera/flutter_feature_camera.dart';
 
 class CameraSelfiePage extends StatefulWidget {
