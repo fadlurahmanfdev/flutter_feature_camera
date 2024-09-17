@@ -29,7 +29,7 @@ indicating capture progress.
 
 ### Base Camera
 
-BaseMixinFeatureCameraV2 is a mixin abstract class designed to facilitate camera-related
+BaseMixinFeatureCameraV2 is a mixin class designed to facilitate camera-related
 functionalities.
 It provides methods for handling essential camera features, such as initializing the camera, taking
 pictures,
@@ -37,6 +37,11 @@ switching between cameras, setting flash modes, starting and stopping image stre
 
 This mixin can be used in widgets or classes where camera functionality is required, allowing for
 streamlined integration of camera operations in Flutter applications.
+
+### List of Camera Available
+
+The list of available camera.
+Initialized the list of available camera using [initializeCamera] or [initializeStreamingCamera]
 
 ### Check Is Camera Available
 
@@ -57,6 +62,19 @@ Captures a picture using the active camera and returns the file.
 ### Stream Camera
 
 Starts streaming the camera image data and triggers `onImageStream` every two seconds.
+
+```dart
+void startStreamCamera() {
+  startImageStream(onImageStream: onImageStream);
+}
+
+Future<void> onImageStream(CameraImage cameraImage, 
+    int sensorOrientation,
+    DeviceOrientation deviceOrientation,
+    CameraLensDirection cameraLensDirection,) async {
+  // process streaming image here
+}
+```
 
 ## Getting started
 
@@ -140,7 +158,8 @@ Widget build(BuildContext context) {
 
 ### Base Camera
 
-For more detailed examples, refer to the [example](https://github.com/fadlurahmanfdev/flutter_feature_camera/blob/master/example/lib/presentation).
+For more detailed examples, refer to
+the [example](https://github.com/fadlurahmanfdev/flutter_feature_camera/blob/master/example/lib/presentation).
 
 ```dart
 class CustomCameraPage extends StatefulWidget {
@@ -159,11 +178,42 @@ class _CustomCameraPageState extends State<CustomCameraPage> with BaseMixinFeatu
     initializeCamera(
       cameraLensDirection: CameraLensDirection.back,
       onCameraInitialized: onCameraInitialized,
-      onCameraInitializedFailure: onCameraInitializedFailure,
+      onCameraInitializedFailure: (FeatureCameraException exception) {},
     );
   }
 
-  // don't forget to setstate
+  void onCameraInitialized(CameraController controller) {
+    setState(() {});
+  }
+}
+```
+
+### Base Camera - Streaming Camera
+
+For more detailed examples, refer to
+the [example](https://github.com/fadlurahmanfdev/flutter_feature_camera/blob/master/example/lib/presentation).
+
+```dart
+class CustomCameraPage extends StatefulWidget {
+  const CustomCameraPage({super.key});
+
+  @override
+  State<CustomCameraPage> createState() => _CustomCameraPageState();
+}
+
+class _CustomCameraPageState extends State<CustomCameraPage> with BaseMixinFeatureCameraV2 {
+
+  @override
+  void initState() {
+    super.initState();
+    addListener(onFlashModeChanged: onFlashModeChanged);
+    initializeStreamingCamera(
+      onCameraInitialized: onCameraInitialized,
+      onCameraInitializedFailure: (FeatureCameraException exception) {},
+      cameraLensDirection: CameraLensDirection.front,
+    );
+  }
+
   void onCameraInitialized(CameraController controller) {
     setState(() {});
   }
