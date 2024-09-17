@@ -33,7 +33,11 @@ mixin BaseMixinFeatureCameraV2 {
   late CameraDescription _cameraDescription;
 
   ImageFormatGroup? _currentImageFormatGroup;
-  ResolutionPreset _currentResolutionPreset = ResolutionPreset.high;
+
+  ResolutionPreset _resolutionPreset = ResolutionPreset.high;
+
+  /// The resolution preset used in currently active camera.
+  ResolutionPreset get resolutionPreset => _resolutionPreset;
 
   void Function(CameraController controller)? _onCameraInitialized;
   void Function(FeatureCameraException exception)? _onCameraInitializedFailure;
@@ -102,7 +106,7 @@ mixin BaseMixinFeatureCameraV2 {
     _currentImageFormatGroup = imageFormatGroup;
     log("initialized imageFormatGroup with $imageFormatGroup");
 
-    _currentResolutionPreset = resolutionPreset;
+    _resolutionPreset = resolutionPreset;
     log("initialized resolutionPreset with: $resolutionPreset");
 
     cameraController = CameraController(
@@ -145,7 +149,7 @@ mixin BaseMixinFeatureCameraV2 {
   /// Initializes the camera with the specified [CameraLensDirection] and handles success or failure callbacks.
   ///
   /// - [cameraLensDirection] specifies whether to use the front or rear camera.
-  /// - [onCameraInitialized] is called when the camera is successfully initialized.
+  /// - [onCameraInitialized] is called when the camera is successfully initialized. Call setState whenever onCameraInitialized called.
   /// - [onCameraInitializedFailure] is called when the camera fails to initialize.
   Future<void> initializeCamera({
     required CameraLensDirection cameraLensDirection,
@@ -170,6 +174,11 @@ mixin BaseMixinFeatureCameraV2 {
     );
   }
 
+  /// Initializes the streaming camera, usually use for liveness detection.
+  ///
+  /// - [cameraLensDirection] specifies whether to use the front or rear camera.
+  /// - [onCameraInitialized] is called when the camera is successfully initialized.
+  /// - [onCameraInitializedFailure] is called when the camera fails to initialize.
   Future<void> initializeStreamingCamera({
     required CameraLensDirection cameraLensDirection,
     required void Function(CameraController controller) onCameraInitialized,
@@ -179,7 +188,7 @@ mixin BaseMixinFeatureCameraV2 {
       cameraLensDirection: cameraLensDirection,
       onCameraInitialized: onCameraInitialized,
       enableAudio: false,
-      resolutionPreset: ResolutionPreset.medium,
+      resolutionPreset: ResolutionPreset.low,
       imageFormatGroup: Platform.isAndroid ? ImageFormatGroup.nv21 : ImageFormatGroup.bgra8888,
     );
   }
@@ -209,7 +218,7 @@ mixin BaseMixinFeatureCameraV2 {
 
     _initializeCameraController(
       cameraLensDirection: cameraLensDirection,
-      resolutionPreset: _currentResolutionPreset,
+      resolutionPreset: _resolutionPreset,
       imageFormatGroup: _currentImageFormatGroup,
     );
   }
