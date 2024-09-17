@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:example/presentation/preview_image_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_feature_camera/camera.dart';
 import 'package:flutter_feature_camera/flutter_feature_camera.dart';
 
@@ -12,16 +13,15 @@ class StreamCameraPage extends StatefulWidget {
   State<StreamCameraPage> createState() => _StreamCameraPageState();
 }
 
-class _StreamCameraPageState extends State<StreamCameraPage> with BaseMixinFeatureCamera {
+class _StreamCameraPageState extends State<StreamCameraPage> with BaseMixinFeatureCameraV2 {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    addListener(
+    initializeStreamingCamera(
       onCameraInitialized: onCameraInitialized,
       onCameraInitializedFailure: onCameraInitializedFailure,
+      cameraLensDirection: CameraLensDirection.front,
     );
-    initializeCamera(cameraLensDirection: CameraLensDirection.front);
   }
 
   @override
@@ -32,21 +32,10 @@ class _StreamCameraPageState extends State<StreamCameraPage> with BaseMixinFeatu
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: const Text("Camera"),
+        title: const Text("Streaming Camera"),
       ),
       body: Stack(
         children: [
@@ -101,7 +90,12 @@ class _StreamCameraPageState extends State<StreamCameraPage> with BaseMixinFeatu
     );
   }
 
-  Future<void> onImageStream(CameraImage cameraImage) async {
+  Future<void> onImageStream(
+    CameraImage cameraImage,
+    int sensorOrientation,
+    DeviceOrientation deviceOrientation,
+    CameraLensDirection cameraLensDirection,
+  ) async {
     stopImageStream().then((_) async {
       final file = await takePicture();
       // final byte = await convert_native.ConvertNativeImgStream()

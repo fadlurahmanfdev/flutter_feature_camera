@@ -19,3 +19,7 @@
 ## 0.0.5-beta
 
 * enhance streaming camera for liveness detection
+
+## 0.0.6-beta
+
+* update docs
