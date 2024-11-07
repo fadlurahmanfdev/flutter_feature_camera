@@ -1,10 +1,10 @@
-A Flutter library provides a comprehensive set of features for camera functionality,
+# Description
+
+A Flutter library provides methode, abstract class, etc related for camera functionality,
 including capturing images, managing flash modes, switching between front and back cameras, and
 enabling image streaming.
-It is designed to streamline the integration of camera capabilities into Flutter applications,
-offering developers an efficient and customizable solution for handling camera-related tasks.
 
-## Features
+## Key Features
 
 ### Rectangle Overlay
 
@@ -27,9 +27,46 @@ overlay.
 Additionally, it supports drawing a progress arc around the circle, which can be useful for
 indicating capture progress.
 
+```dart
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text("Camera ID Card Page", style: TextStyle(color: Colors.black)),
+    ),
+    body: Stack(
+      children: [
+        // Camera preview area
+        Container(
+          alignment: Alignment.center,
+          child: cameraController?.value.isInitialized == true
+              ? CameraPreview(cameraController!)
+              : Container(),
+        ),
+        // Overlay rectangle for ID card capture
+        IgnorePointer(
+          child: CustomPaint(
+            painter: RectanglePainterV2(),
+            child: Container(),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+```
+
+<table>
+  <tr>
+    <td>
+		<img alt="Circle Overlay" width="250px" src="https://raw.githubusercontent.com/fadlurahmanfdev/flutter_feature_face_detection/master/media/circle_overlay.png">
+    </td>
+  </tr>
+</table>
+
 ### Base Camera
 
-BaseMixinFeatureCameraV2 is a mixin class designed to facilitate camera-related
+`BaseMixinFeatureCameraV2` is a mixin class designed to facilitate camera-related
 functionalities.
 It provides methods for handling essential camera features, such as initializing the camera, taking
 pictures,
@@ -38,30 +75,69 @@ switching between cameras, setting flash modes, starting and stopping image stre
 This mixin can be used in widgets or classes where camera functionality is required, allowing for
 streamlined integration of camera operations in Flutter applications.
 
-### List of Camera Available
-
-The list of available camera.
-Initialized the list of available camera using [initializeCamera] or [initializeStreamingCamera]
-
 ### Check Is Camera Available
 
 Checks if a camera with the specified `cameraLensDirection` is available.
 
+This function available inside `BaseMixinFeatureCameraV2`.
+
+```dart
+final isCameraAvailable = isCameraAvailable(CameraLensDirection.back);
+```
+
+| Parameter Name        | Type                | Required | Description                                                                                                                               |
+|-----------------------|---------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| `cameraLensDirection` | CameraLensDirection | Yes      | The direction the camera is facing. Possibility value (CameraLensDirection.back, CameraLensDirection.front, CameraLensDirection.external) |
+
 ### Switch Camera Lens Direction
 
-Switches the active camera to the specified `CameraLensDirection` (front or rear).
+Switches the active camera to the specified `CameraLensDirection`.
+
+This function available inside `BaseMixinFeatureCameraV2`.
+
+```dart
+void screenFunction() {
+  switchCamera(CameraLensDirection.back); 
+}
+```
+
+| Parameter Name        | Type                | Required | Description                                                                                                                               |
+|-----------------------|---------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| `cameraLensDirection` | CameraLensDirection | Yes      | The direction the camera is facing. Possibility value (CameraLensDirection.back, CameraLensDirection.front, CameraLensDirection.external) |
 
 ### Set Flash Mode
 
 Sets the camera's flash mode to the specified `flashMode` (off, on, auto, etc.).
 
+This function available inside `BaseMixinFeatureCameraV2`.
+
+```dart
+void screenFunction() {
+  setFlashMode(FlashMode.always); 
+}
+```
+
+| Parameter Name | Type       | Required | Description                                                                                                                                 |
+|----------------|------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| `flashMode`    | FlashMode  | Yes      | The possible flash modes that can be set for a camera. Possibility value (FlashMode.off, FlashMode.auto, FlashMode.always, FlashMode.torch) |
+
 ### Take Picture
 
 Captures a picture using the active camera and returns the file.
 
+This function available inside `BaseMixinFeatureCameraV2`.
+
+```dart
+void screenFunction() {
+  takePicture();
+}
+```
+
 ### Stream Camera
 
 Starts streaming the camera image data and triggers `onImageStream` every two seconds.
+
+This function available inside `BaseMixinFeatureCameraV2`.
 
 ```dart
 void startStreamCamera() {
@@ -114,39 +190,6 @@ Widget build(BuildContext context) {
         IgnorePointer(
           child: CustomPaint(
             painter: RectanglePainterV2(),
-            child: Container(),
-          ),
-        ),
-      ],
-    ),
-  );
-}
-```
-
-### Circle Overlay
-
-```dart
- @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      title: const Text("Camera Selfie Page", style: TextStyle(color: Colors.black)),
-    ),
-    body: Stack(
-      children: [
-        // Camera preview area
-        Container(
-          alignment: Alignment.center,
-          child: cameraController?.value.isInitialized == true
-              ? CameraPreview(cameraController!)
-              : Container(),
-        ),
-        // Circular overlay for selfie capture
-        IgnorePointer(
-          child: CustomPaint(
-            painter: CirclePainterV2(
-              progress: 0.5, // Draw half of the progress arc (optional)
-            ),
             child: Container(),
           ),
         ),

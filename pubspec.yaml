@@ -5,13 +5,13 @@ homepage: https://github.com/fadlurahmanfdev/flutter_feature_camera
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
-  flutter: ">=1.17.0"
+  flutter: ">=3.10.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
-  camera: ^0.11.0+1
+  camera: ^0.10.5
   image: ^4.2.0
 
 dev_dependencies:
