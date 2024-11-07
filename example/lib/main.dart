@@ -1,7 +1,6 @@
 import 'package:example/data/dto/model/feature_model.dart';
 import 'package:example/presentation/camera_id_card_page.dart';
 import 'package:example/presentation/capture_image_page.dart';
-import 'package:example/presentation/main_page.dart';
 import 'package:example/presentation/preview_id_card_page_v2.dart';
 import 'package:example/presentation/preview_selfie_page.dart';
 import 'package:example/presentation/preview_selfie_page_v2.dart';
