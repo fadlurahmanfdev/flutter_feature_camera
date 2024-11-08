@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 import 'package:example/presentation/preview_image_page.dart';
@@ -16,6 +15,7 @@ class CaptureImagePage extends StatefulWidget {
 
 class _CaptureImagePageState extends State<CaptureImagePage> with BaseMixinFeatureCameraV2 {
   CameraController? _cameraController;
+
   @override
   void initState() {
     super.initState();
@@ -57,7 +57,28 @@ class _CaptureImagePageState extends State<CaptureImagePage> with BaseMixinFeatu
         children: [
           Container(
             alignment: Alignment.center,
-            child: _cameraController?.value.isInitialized == true ? CameraPreview(_cameraController!) : Container(),
+            child: _cameraController?.value.isInitialized == true
+                ? GestureDetector(
+                    onTapUp: (detail) {
+
+                      final dx = detail.localPosition.dx;
+                      final dy = detail.localPosition.dy;
+
+                      double fullWidth = MediaQuery.of(context).size.width;
+                      double cameraHeight = fullWidth * _cameraController!.value.aspectRatio;
+
+                      double xp = dx / fullWidth;
+                      double yp = dy / cameraHeight;
+
+                      print("masuk x: ${detail.localPosition.dx}");
+                      print("masuk xp: $xp");
+                      print("masuk y: ${detail.localPosition.dy}");
+                      print("masuk yp: $yp");
+
+                      _cameraController?.setFocusPoint(Offset(xp, yp));
+                    },
+                    child: CameraPreview(_cameraController!))
+                : Container(),
           ),
           Align(
             alignment: Alignment.bottomCenter,
