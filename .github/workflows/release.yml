@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: production
+    environment: pub-dev
     permissions:
       id-token: write
       contents: read
