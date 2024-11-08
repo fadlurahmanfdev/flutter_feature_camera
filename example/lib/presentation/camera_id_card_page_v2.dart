@@ -62,9 +62,9 @@ class _CameraIdCardPageV2State extends State<CameraIdCardPageV2> with BaseMixinF
           Align(
             alignment: Alignment.bottomCenter,
             child: CameraControlLayoutWidget(
-              flashIcon: currentFlashMode == FlashMode.always
+              flashIcon: flashModeState == FlashMode.always
                   ? Icon(Icons.flash_on)
-                  : currentFlashMode == FlashMode.torch
+                  : flashModeState == FlashMode.torch
                       ? Icon(Icons.flashlight_on)
                       : Icon(Icons.flash_off),
               onFlashTap: onFlashTap,
@@ -92,7 +92,7 @@ class _CameraIdCardPageV2State extends State<CameraIdCardPageV2> with BaseMixinF
   }
 
   Future<void> onFlashTap() async {
-    switch (currentFlashMode) {
+    switch (flashModeState) {
       case FlashMode.off:
         setState(() {
           setFlashMode(FlashMode.always);

@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:example/presentation/camera_selfie_page.dart';
 import 'package:example/presentation/camera_selfie_page_v2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_feature_camera/flutter_feature_camera.dart';

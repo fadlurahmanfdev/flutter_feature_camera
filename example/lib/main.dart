@@ -11,15 +11,31 @@ import 'package:flutter/material.dart';
 void main() {
   runApp(const MyApp());
 }
-
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Camera Example',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+      home: const MainPage(),
+    );
+  }
 }
 
-class _MyAppState extends State<MyApp> {
+class MainPage extends StatefulWidget {
+  const MainPage({super.key});
+
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+
   List<FeatureModel> features = [
     FeatureModel(
       title: 'Capture Image',
@@ -55,46 +71,39 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Camera Example',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Camera')),
-        body: ListView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          itemCount: features.length,
-          itemBuilder: (_, index) {
-            final feature = features[index];
-            return GestureDetector(
-              onTap: () async {
-                switch (feature.key) {
-                  case "CAPTURE_IMAGE":
-                    Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CaptureImagePage()));
-                    break;
-                  case "STREAM_IMAGE":
-                    Navigator.of(context).push(MaterialPageRoute(builder: (_) => const StreamCameraPage()));
-                    break;
-                  case "SELFIE_CAMERA":
-                    Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PreviewSelfiePage()));
-                    break;
-                  case "SELFIE_CAMERA_V2":
-                    Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PreviewSelfiePageV2()));
-                    break;
-                  case "ID_CARD_CAMERA":
-                    Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CameraIdCardPage()));
-                    break;
-                  case "ID_CARD_CAMERA_V2":
-                    Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PreviewIdCardPage2()));
-                    break;
-                }
-              },
-              child: ItemFeatureWidget(feature: feature),
-            );
-          },
-        ),
+    return Scaffold(
+      appBar: AppBar(title: const Text('Camera Example')),
+      body: ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        itemCount: features.length,
+        itemBuilder: (_, index) {
+          final feature = features[index];
+          return GestureDetector(
+            onTap: () async {
+              switch (feature.key) {
+                case "CAPTURE_IMAGE":
+                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CaptureImagePage()));
+                  break;
+                case "STREAM_IMAGE":
+                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => const StreamCameraPage()));
+                  break;
+                case "SELFIE_CAMERA":
+                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PreviewSelfiePage()));
+                  break;
+                case "SELFIE_CAMERA_V2":
+                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PreviewSelfiePageV2()));
+                  break;
+                case "ID_CARD_CAMERA":
+                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CameraIdCardPage()));
+                  break;
+                case "ID_CARD_CAMERA_V2":
+                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PreviewIdCardPage2()));
+                  break;
+              }
+            },
+            child: ItemFeatureWidget(feature: feature),
+          );
+        },
       ),
     );
   }

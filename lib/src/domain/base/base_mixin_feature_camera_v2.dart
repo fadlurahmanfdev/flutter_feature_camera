@@ -154,7 +154,7 @@ mixin BaseMixinFeatureCameraV2 {
   Future<void> initializeCamera({
     required CameraLensDirection cameraLensDirection,
     required void Function(CameraController controller) onCameraInitialized,
-    void Function(FeatureCameraException exception)? onCameraInitializedFailure,
+    required void Function(FeatureCameraException exception) onCameraInitializedFailure,
     ResolutionPreset resolutionPreset = ResolutionPreset.high,
     bool enableAudio = true,
     ImageFormatGroup? imageFormatGroup,
@@ -182,11 +182,12 @@ mixin BaseMixinFeatureCameraV2 {
   Future<void> initializeStreamingCamera({
     required CameraLensDirection cameraLensDirection,
     required void Function(CameraController controller) onCameraInitialized,
-    void Function(FeatureCameraException exception)? onCameraInitializedFailure,
+    required void Function(FeatureCameraException exception) onCameraInitializedFailure,
   }) async {
     return initializeCamera(
       cameraLensDirection: cameraLensDirection,
       onCameraInitialized: onCameraInitialized,
+      onCameraInitializedFailure: onCameraInitializedFailure,
       enableAudio: false,
       resolutionPreset: ResolutionPreset.low,
       imageFormatGroup: Platform.isAndroid ? ImageFormatGroup.nv21 : ImageFormatGroup.bgra8888,
@@ -212,7 +213,7 @@ mixin BaseMixinFeatureCameraV2 {
       return;
     }
 
-    if (currentFlashMode != FlashMode.off) {
+    if (flashModeState != FlashMode.off) {
       await setFlashMode(FlashMode.off);
     }
 
@@ -229,7 +230,7 @@ mixin BaseMixinFeatureCameraV2 {
   /// - [onCameraInitializedFailure] is called when the camera fails to initialize.
   Future<void> resumeCamera({
     required void Function(CameraController controller) onCameraInitialized,
-    void Function(FeatureCameraException exception)? onCameraInitializedFailure,
+    required void Function(FeatureCameraException exception) onCameraInitializedFailure,
   }) async {
     return initializeCamera(
       cameraLensDirection: cameraLensDirection,
@@ -240,7 +241,7 @@ mixin BaseMixinFeatureCameraV2 {
 
   /// Disposes the active camera and resets flash mode to off.
   Future<void> disposeCamera() async {
-    if (currentFlashMode != FlashMode.off) {
+    if (flashModeState != FlashMode.off) {
       await setFlashMode(FlashMode.off);
     }
 
@@ -252,18 +253,18 @@ mixin BaseMixinFeatureCameraV2 {
   }
 
   /// The current flash mode of the camera (on, off, auto, etc.).
-  FlashMode currentFlashMode = FlashMode.off;
+  FlashMode flashModeState = FlashMode.off;
 
   /// Sets the camera's flash mode to the specified [flashMode] (off, on, auto, etc.).
   ///
   /// - If the current flash mode is already the desired one, no action is taken.
   Future<void> setFlashMode(FlashMode flashMode) async {
-    if (currentFlashMode == flashMode) {
+    if (flashModeState == flashMode) {
       log("flash mode same with current condition");
       return;
     }
     await cameraController?.setFlashMode(flashMode);
-    currentFlashMode = flashMode;
+    flashModeState = flashMode;
     log("successfully update flashMode to $flashMode");
     if (_onFlashModeChanged != null) {
       _onFlashModeChanged?.call(flashMode);

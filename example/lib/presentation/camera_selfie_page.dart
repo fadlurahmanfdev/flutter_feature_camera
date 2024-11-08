@@ -22,14 +22,18 @@ class _CameraSelfiePageState extends State<CameraSelfiePage> with BaseMixinFeatu
     initializeCamera(
       cameraLensDirection: CameraLensDirection.front,
       onCameraInitialized: onCameraInitialized,
+      onCameraInitializedFailure: onCameraInitializedFailure,
     );
+  }
+
+  void onCameraInitializedFailure(FeatureCameraException exception) {
   }
 
   void onFlashModeChanged(FlashMode flashMode) {
     setState(() {});
   }
 
-  void onCameraInitialized(_) {
+  void onCameraInitialized(CameraController controller) {
     setState(() {});
   }
 
