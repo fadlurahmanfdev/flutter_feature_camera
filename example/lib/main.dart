@@ -1,8 +1,8 @@
 import 'package:example/data/dto/model/feature_model.dart';
-import 'package:example/presentation/capture_image_page.dart';
+import 'package:example/data/enum/preview_type.dart';
 import 'package:example/presentation/preview_id_card_page_v2.dart';
+import 'package:example/presentation/preview_image_page.dart';
 import 'package:example/presentation/preview_selfie_page_v2.dart';
-import 'package:example/presentation/stream_camera_page.dart';
 import 'package:example/presentation/widget/feature_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -70,10 +70,10 @@ class _MainPageState extends State<MainPage> {
             onTap: () async {
               switch (feature.key) {
                 case "CAPTURE_IMAGE":
-                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CaptureImagePage()));
+                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PreviewImagePage(previewType: PreviewType.capture)));
                   break;
                 case "STREAM_IMAGE":
-                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => const StreamCameraPage()));
+                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PreviewImagePage(previewType: PreviewType.stream)));
                   break;
                 case "SELFIE_CAMERA_V2":
                   Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PreviewSelfiePageV2()));

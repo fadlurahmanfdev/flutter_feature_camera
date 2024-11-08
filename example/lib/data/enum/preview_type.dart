@@ -1,0 +1,4 @@
+enum PreviewType {
+  capture,
+  stream,
+}

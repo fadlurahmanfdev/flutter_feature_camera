@@ -15,6 +15,7 @@ class StreamCameraPage extends StatefulWidget {
 
 class _StreamCameraPageState extends State<StreamCameraPage> with BaseMixinFeatureCameraV2 {
   CameraController? _cameraController;
+
   @override
   void initState() {
     super.initState();
@@ -103,9 +104,9 @@ class _StreamCameraPageState extends State<StreamCameraPage> with BaseMixinFeatu
       final captureModel = await takePicture();
       // final byte = await convert_native.ConvertNativeImgStream()
       //     .convertImgToBytes(cameraImage.planes.first.bytes, cameraImage.width, cameraImage.height);
-      final base64Encode = base64.encode(await captureModel.file.readAsBytes());
+      final base64Encoded = base64.encode(await captureModel.file.readAsBytes());
       if (mounted) {
-        Navigator.of(context).push(MaterialPageRoute(builder: (_) => PreviewImagePage(base64Image: base64Encode)));
+        Navigator.of(context).pop(base64Encoded);
       }
     });
   }

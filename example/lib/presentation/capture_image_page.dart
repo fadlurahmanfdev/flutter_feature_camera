@@ -1,5 +1,10 @@
 
+import 'dart:convert';
+
+import 'package:example/presentation/preview_image_page.dart';
+import 'package:example/presentation/widget/camera_control_layout_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_feature_camera/camera.dart';
 import 'package:flutter_feature_camera/flutter_feature_camera.dart';
 
 class CaptureImagePage extends StatefulWidget {
@@ -10,18 +15,30 @@ class CaptureImagePage extends StatefulWidget {
 }
 
 class _CaptureImagePageState extends State<CaptureImagePage> with BaseMixinFeatureCameraV2 {
+  CameraController? _cameraController;
   @override
   void initState() {
     super.initState();
-    // addListener(
-    //   onCameraInitialized: (_) {
-    //     setState(() {});
-    //   },
-    //   onFlashModeChanged: (flashMode) {
-    //     setState(() {});
-    //   },
-    // );
-    // initializeCamera(cameraLensDirection: CameraLensDirection.back);
+    addListener(
+      onFlashModeChanged: onFlashModeChanged,
+    );
+    initializeCamera(
+      cameraLensDirection: CameraLensDirection.back,
+      onCameraInitialized: onCameraInitialized,
+      onCameraInitializedFailure: onCameraInitializedFailure,
+    );
+  }
+
+  void onCameraInitializedFailure(FeatureCameraException exception) {}
+
+  void onFlashModeChanged(FlashMode flashMode) {
+    setState(() {});
+  }
+
+  void onCameraInitialized(CameraController cameraController) {
+    setState(() {
+      _cameraController = cameraController;
+    });
   }
 
   @override
@@ -32,64 +49,61 @@ class _CaptureImagePageState extends State<CaptureImagePage> with BaseMixinFeatu
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox();
-    // return Scaffold(
-    //   appBar: AppBar(
-    //     title: const Text("Camera Capture", style: TextStyle(color: Colors.black)),
-    //   ),
-    //   body: Stack(
-    //     children: [
-    //       Container(
-    //         alignment: Alignment.center,
-    //         child: cameraController?.value.isInitialized == true ? CameraPreview(cameraController!) : Container(),
-    //       ),
-    //       Align(
-    //         alignment: Alignment.bottomCenter,
-    //         child: CameraControlLayoutWidget(
-    //           flashIcon: switch (currentFlashMode) {
-    //             FlashMode.off => Icon(Icons.flash_off),
-    //             FlashMode.auto => Icon(Icons.flash_auto),
-    //             FlashMode.always => Icon(Icons.flash_on),
-    //             FlashMode.torch => Icon(Icons.flash_on),
-    //           },
-    //           onFlashTap: onFlashTap,
-    //           captureIcon: Icon(Icons.camera_alt),
-    //           onCaptureTap: onCaptureTap,
-    //           switchCameraIcon: Icon(Icons.autorenew),
-    //           onSwitchCameraTap: onSwitchCameraTap,
-    //         ),
-    //       ),
-    //     ],
-    //   ),
-    // );
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Camera Capture", style: TextStyle(color: Colors.black)),
+      ),
+      body: Stack(
+        children: [
+          Container(
+            alignment: Alignment.center,
+            child: _cameraController?.value.isInitialized == true ? CameraPreview(_cameraController!) : Container(),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: CameraControlLayoutWidget(
+              flashIcon: switch (flashModeState) {
+                FlashMode.off => Icon(Icons.flash_off),
+                FlashMode.auto => Icon(Icons.flash_auto),
+                FlashMode.always => Icon(Icons.flash_on),
+                FlashMode.torch => Icon(Icons.flash_on),
+              },
+              onFlashTap: onFlashTap,
+              captureIcon: Icon(Icons.camera_alt),
+              onCaptureTap: onCaptureTap,
+              switchCameraIcon: Icon(Icons.autorenew),
+              onSwitchCameraTap: onSwitchCameraTap,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void onCaptureTap() {
-    // takePicture().then((value) async {
-    //   final bytes = await value?.readAsBytes();
-    //   if (bytes != null) {
-    //     final base64Encode = base64.encode(bytes);
-    //     if (mounted) {
-    //       Navigator.of(context).push(MaterialPageRoute(builder: (_) => PreviewImagePage(base64Image: base64Encode)));
-    //     }
-    //   }
-    // });
+    takePicture().then((value) async {
+      final bytes = await value.file.readAsBytes();
+      final base64Encoded = base64.encode(bytes);
+      if (mounted) {
+        Navigator.of(context).pop(base64Encoded);
+      }
+    });
   }
 
   void onFlashTap() {
-    // if (currentFlashMode == FlashMode.off) {
-    //   setFlashMode(FlashMode.always);
-    // } else {
-    //   setFlashMode(FlashMode.off);
-    // }
+    if (flashModeState == FlashMode.off) {
+      setFlashMode(FlashMode.always);
+    } else {
+      setFlashMode(FlashMode.off);
+    }
   }
 
   void onSwitchCameraTap() {
-    // disposeCamera();
-    // if (currentCameraLensDirection == CameraLensDirection.back) {
-    //   initializeCamera(cameraLensDirection: CameraLensDirection.front);
-    // } else {
-    //   initializeCamera(cameraLensDirection: CameraLensDirection.back);
-    // }
+    disposeCamera();
+    if (cameraLensDirection == CameraLensDirection.back) {
+      switchCamera(CameraLensDirection.front);
+    } else {
+      switchCamera(CameraLensDirection.back);
+    }
   }
 }

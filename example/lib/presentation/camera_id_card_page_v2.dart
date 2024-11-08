@@ -85,9 +85,9 @@ class _CameraIdCardPageV2State extends State<CameraIdCardPageV2> with BaseMixinF
   void onCaptureTap() {
     takePicture(includeExif: true).then((value) async {
       final bytes = await value.file.readAsBytes();
-      final base64Encode = base64.encode(bytes);
+      final base64Encoded = base64.encode(bytes);
       if (mounted) {
-        Navigator.of(context).push(MaterialPageRoute(builder: (_) => PreviewImagePage(base64Image: base64Encode)));
+        Navigator.of(context).pop(base64Encoded);
       }
     });
   }
