@@ -2,9 +2,12 @@
 
 * add exif
 * downgrade version flutter to 3.10.0 & dart 3.0.0
-* update docs
 * update take picture
 * update example
+
+## 0.0.5-beta
+
+* update docs
 
 ## 0.0.5-beta
 
