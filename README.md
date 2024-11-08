@@ -127,9 +127,13 @@ Captures a picture using the active camera and returns the file.
 
 This function available inside `BaseMixinFeatureCameraV2`.
 
+| Parameter Name  | Type | Required | Description                                      |
+|-----------------|------|----------|--------------------------------------------------|
+| `includeExif`   | bool | false    | if `includeExif` true, it will return exif data. |
+
 ```dart
 void screenFunction() {
-  takePicture();
+  takePicture(includeExif: true);
 }
 ```
 

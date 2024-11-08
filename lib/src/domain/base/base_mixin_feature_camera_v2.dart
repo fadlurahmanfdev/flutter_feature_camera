@@ -273,12 +273,16 @@ mixin BaseMixinFeatureCameraV2 {
   }
 
   /// Captures a picture using the active camera and returns the file.
+  /// If the camera controller is not initialized, this function will throw an error
   ///
-  /// - If the camera controller is not initialized, this function will log an error and return null.
+  /// - [includeExif] - if this true, the model will return exifData
+  ///
   Future<CaptureImageModel> takePicture({bool includeExif = false}) async {
     if (_cameraController == null) {
       throw FeatureCameraException(
-          code: ErrorConstant.MISSING_CAMERA_CONTROLLER, message: 'Camera Controller not yet initialized');
+        code: ErrorConstant.MISSING_CAMERA_CONTROLLER,
+        message: 'Camera Controller not yet initialized',
+      );
     }
     final xFile = await _cameraController!.takePicture();
     final newFile = File(xFile.path);
