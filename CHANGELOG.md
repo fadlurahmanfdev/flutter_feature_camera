@@ -1,6 +1,10 @@
-## 0.0.6-beta
+## 0.1.0
 
+* add exif
+* downgrade version flutter to 3.10.0 & dart 3.0.0
 * update docs
+* update take picture
+* update example
 
 ## 0.0.5-beta
 
