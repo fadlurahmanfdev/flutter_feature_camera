@@ -3,10 +3,11 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:exif/exif.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_feature_camera/flutter_feature_camera.dart';
+import 'package:flutter_feature_camera/src/data/constant/error_constant.dart';
 import 'package:flutter_feature_camera/src/data/enum/enum_feature_camera_exception.dart';
-import 'package:flutter_feature_camera/src/data/exception/feature_camera_exception.dart';
 import 'package:image/image.dart' as image_lib;
 
 /// BaseMixinFeatureCameraV2 is a mixin class designed to facilitate camera-related functionalities.
@@ -274,22 +275,34 @@ mixin BaseMixinFeatureCameraV2 {
   /// Captures a picture using the active camera and returns the file.
   ///
   /// - If the camera controller is not initialized, this function will log an error and return null.
-  Future<File?> takePicture() async {
+  Future<CaptureImageModel> takePicture({bool includeExif = false}) async {
     if (cameraController == null) {
-      log("unable to takePicture, cameraController missing");
-      return null;
+      throw FeatureCameraException(
+          code: ErrorConstant.MISSING_CAMERA_CONTROLLER, message: 'Camera Controller not yet initialized');
     }
-    final xFile = await cameraController?.takePicture();
-    if (xFile == null) return null;
+    final xFile = await cameraController!.takePicture();
     final newFile = File(xFile.path);
-    if (Platform.isIOS) return newFile;
+    Map<String, IfdTag>? exifData;
+    if (includeExif) {
+      try {
+        exifData = await readExifFromFile(newFile);
+      } catch (e) {
+        log("failed to fetch exif data: $e");
+      }
+    }
+    if (Platform.isIOS) return CaptureImageModel(file: newFile, exifData: exifData);
     final imageBytes = await xFile.readAsBytes();
-    final originalImage = image_lib.decodeImage(imageBytes);
-    if (originalImage == null) return null;
-    if (cameraLensDirection == CameraLensDirection.back) return newFile;
+    image_lib.Image? originalImage;
+    try {
+      originalImage = image_lib.decodeImage(imageBytes);
+    } catch (e) {
+      log("failed to decode image: $e");
+    }
+    if (originalImage == null) return CaptureImageModel(file: newFile, exifData: exifData);
+    if (cameraLensDirection == CameraLensDirection.back) return CaptureImageModel(file: newFile, exifData: exifData);
     final fixedImage = image_lib.flipHorizontal(originalImage);
     await newFile.writeAsBytes(image_lib.encodeJpg(fixedImage), flush: true);
-    return newFile;
+    return CaptureImageModel(file: newFile, exifData: exifData);
   }
 
   Timer? _streamImageTimer;

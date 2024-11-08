@@ -97,10 +97,10 @@ class _StreamCameraPageState extends State<StreamCameraPage> with BaseMixinFeatu
     CameraLensDirection cameraLensDirection,
   ) async {
     stopImageStream().then((_) async {
-      final file = await takePicture();
+      final captureModel = await takePicture();
       // final byte = await convert_native.ConvertNativeImgStream()
       //     .convertImgToBytes(cameraImage.planes.first.bytes, cameraImage.width, cameraImage.height);
-      final base64Encode = base64.encode(await file!.readAsBytes());
+      final base64Encode = base64.encode(await captureModel.file.readAsBytes());
       if (mounted) {
         Navigator.of(context).push(MaterialPageRoute(builder: (_) => PreviewImagePage(base64Image: base64Encode)));
       }

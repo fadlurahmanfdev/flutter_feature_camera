@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:example/presentation/widget/camera_control_layout_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_feature_camera/camera.dart';
+import 'package:flutter_feature_camera/exif.dart';
 import 'package:flutter_feature_camera/flutter_feature_camera.dart';
 
 class CameraSelfiePageV2 extends StatefulWidget {
@@ -79,13 +80,16 @@ class _CameraSelfiePageV2State extends State<CameraSelfiePageV2> with BaseMixinF
   }
 
   void onCaptureTap() {
-    takePicture().then((value) async {
-      final bytes = await value?.readAsBytes();
-      if (bytes != null) {
-        final base64Encode = base64.encode(bytes);
-        if (mounted) {
-          Navigator.of(context).pop(base64Encode);
+    takePicture(includeExif: true).then((value) async {
+      final bytes = await value.file.readAsBytes();
+      if(value.exifData != null){
+        for (final entry in value.exifData!.entries) {
+          print("exif data - ${entry.key}: ${entry.value}");
         }
+      }
+      final base64Encode = base64.encode(bytes);
+      if (mounted) {
+        Navigator.of(context).pop(base64Encode);
       }
     });
   }

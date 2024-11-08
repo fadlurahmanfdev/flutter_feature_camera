@@ -1,0 +1,1 @@
+export 'package:exif/exif.dart';

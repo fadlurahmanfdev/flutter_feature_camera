@@ -80,13 +80,11 @@ class _CameraIdCardPageV2State extends State<CameraIdCardPageV2> with BaseMixinF
   }
 
   void onCaptureTap() {
-    takePicture().then((value) async {
-      final bytes = await value?.readAsBytes();
-      if (bytes != null) {
-        final base64Encode = base64.encode(bytes);
-        if (mounted) {
-          Navigator.of(context).push(MaterialPageRoute(builder: (_) => PreviewImagePage(base64Image: base64Encode)));
-        }
+    takePicture(includeExif: true).then((value) async {
+      final bytes = await value.file.readAsBytes();
+      final base64Encode = base64.encode(bytes);
+      if (mounted) {
+        Navigator.of(context).push(MaterialPageRoute(builder: (_) => PreviewImagePage(base64Image: base64Encode)));
       }
     });
   }
