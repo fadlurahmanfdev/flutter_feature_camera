@@ -1,6 +1,6 @@
 name: flutter_feature_camera
 description: "Camera Package from fadlurahmanfdev"
-version: 0.0.6-beta
+version: 0.1.0
 homepage: https://github.com/fadlurahmanfdev/flutter_feature_camera
 
 environment:
@@ -11,9 +11,9 @@ dependencies:
   flutter:
     sdk: flutter
 
-  camera: ^0.10.5
+  camera: ^0.10.5+9
   exif: ^3.3.0
-  image: ^4.2.0
+  image: ^4.3.0
 
 dev_dependencies:
   flutter_test:
