@@ -18,7 +18,7 @@ import 'package:image/image.dart' as image_lib;
 /// streamlined integration of camera operations in Flutter applications.
 mixin BaseMixinFeatureCameraV2 {
   /// The current [CameraController] to control the camera hardware.
-  CameraController? cameraController;
+  CameraController? _cameraController;
 
   final List<CameraDescription> _cameraAvailable = [];
 
@@ -110,14 +110,14 @@ mixin BaseMixinFeatureCameraV2 {
     _resolutionPreset = resolutionPreset;
     log("initialized resolutionPreset with: $resolutionPreset");
 
-    cameraController = CameraController(
+    _cameraController = CameraController(
       selectedCameraDescription,
       enableAudio: enableAudio,
       resolutionPreset,
       imageFormatGroup: imageFormatGroup,
     );
-    cameraController!.initialize().then((_) {
-      _onCameraInitialized?.call(cameraController!);
+    _cameraController!.initialize().then((_) {
+      _onCameraInitialized?.call(_cameraController!);
     }).catchError((e) {
       if (e is CameraException) {
         switch (e.code) {
@@ -199,12 +199,12 @@ mixin BaseMixinFeatureCameraV2 {
   ///
   /// If the camera is not initialized or the selected camera is already active, the function will log an error.
   Future<void> switchCamera(CameraLensDirection cameraLensDirection) async {
-    if (cameraController == null || _onCameraInitialized == null || _onCameraInitializedFailure == null) {
+    if (_cameraController == null || _onCameraInitialized == null || _onCameraInitializedFailure == null) {
       log("failed to switch camera, camera didn't start yet");
       return;
     }
 
-    if (cameraController?.value.isInitialized != true) {
+    if (_cameraController?.value.isInitialized != true) {
       log("failed to switch camera, camera not yet initialized");
       return;
     }
@@ -249,8 +249,8 @@ mixin BaseMixinFeatureCameraV2 {
     _onCameraInitialized = null;
     _onCameraInitializedFailure = null;
 
-    cameraController?.dispose();
-    cameraController = null;
+    _cameraController?.dispose();
+    _cameraController = null;
   }
 
   /// The current flash mode of the camera (on, off, auto, etc.).
@@ -264,7 +264,7 @@ mixin BaseMixinFeatureCameraV2 {
       log("flash mode same with current condition");
       return;
     }
-    await cameraController?.setFlashMode(flashMode);
+    await _cameraController?.setFlashMode(flashMode);
     flashModeState = flashMode;
     log("successfully update flashMode to $flashMode");
     if (_onFlashModeChanged != null) {
@@ -276,11 +276,11 @@ mixin BaseMixinFeatureCameraV2 {
   ///
   /// - If the camera controller is not initialized, this function will log an error and return null.
   Future<CaptureImageModel> takePicture({bool includeExif = false}) async {
-    if (cameraController == null) {
+    if (_cameraController == null) {
       throw FeatureCameraException(
           code: ErrorConstant.MISSING_CAMERA_CONTROLLER, message: 'Camera Controller not yet initialized');
     }
-    final xFile = await cameraController!.takePicture();
+    final xFile = await _cameraController!.takePicture();
     final newFile = File(xFile.path);
     Map<String, IfdTag>? exifData;
     if (includeExif) {
@@ -322,8 +322,8 @@ mixin BaseMixinFeatureCameraV2 {
       CameraLensDirection cameraLensDirection,
     ) onImageStream,
   }) async {
-    if (cameraController == null) {
-      log("unable to startImageStream, cameraController missing");
+    if (_cameraController == null) {
+      log("unable to startImageStream, _cameraController missing");
       return;
     }
 
@@ -332,7 +332,7 @@ mixin BaseMixinFeatureCameraV2 {
       return;
     }
 
-    cameraController?.startImageStream((image) {
+    _cameraController?.startImageStream((image) {
       _isStreamingImage = true;
 
       if (_streamImageTimer != null) return;
@@ -340,7 +340,7 @@ mixin BaseMixinFeatureCameraV2 {
         onImageStream(
           image,
           _cameraDescription.sensorOrientation,
-          cameraController?.value.deviceOrientation ?? DeviceOrientation.portraitUp,
+          _cameraController?.value.deviceOrientation ?? DeviceOrientation.portraitUp,
           cameraLensDirection,
         );
         _streamImageTimer?.cancel();
@@ -355,7 +355,7 @@ mixin BaseMixinFeatureCameraV2 {
     _isStreamingImage = false;
     _streamImageTimer?.cancel();
     _streamImageTimer = null;
-    await cameraController?.stopImageStream();
+    await _cameraController?.stopImageStream();
     log("successfully stopImageStream");
   }
 }

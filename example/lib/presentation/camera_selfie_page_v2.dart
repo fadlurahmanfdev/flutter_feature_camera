@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:example/presentation/widget/camera_control_layout_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_feature_camera/camera.dart';
-import 'package:flutter_feature_camera/exif.dart';
 import 'package:flutter_feature_camera/flutter_feature_camera.dart';
 
 class CameraSelfiePageV2 extends StatefulWidget {
@@ -14,6 +13,7 @@ class CameraSelfiePageV2 extends StatefulWidget {
 }
 
 class _CameraSelfiePageV2State extends State<CameraSelfiePageV2> with BaseMixinFeatureCameraV2 {
+  CameraController? _cameraController;
   @override
   void initState() {
     super.initState();
@@ -33,8 +33,10 @@ class _CameraSelfiePageV2State extends State<CameraSelfiePageV2> with BaseMixinF
     setState(() {});
   }
 
-  void onCameraInitialized(_) {
-    setState(() {});
+  void onCameraInitialized(CameraController cameraController) {
+    setState(() {
+      _cameraController = cameraController;
+    });
   }
 
   @override
@@ -53,7 +55,7 @@ class _CameraSelfiePageV2State extends State<CameraSelfiePageV2> with BaseMixinF
         children: [
           Container(
             alignment: Alignment.center,
-            child: cameraController?.value.isInitialized == true ? CameraPreview(cameraController!) : Container(),
+            child: _cameraController?.value.isInitialized == true ? CameraPreview(_cameraController!) : Container(),
           ),
           IgnorePointer(
             child: CustomPaint(

@@ -14,6 +14,7 @@ class CameraIdCardPageV2 extends StatefulWidget {
 }
 
 class _CameraIdCardPageV2State extends State<CameraIdCardPageV2> with BaseMixinFeatureCameraV2 {
+  CameraController? _cameraController;
   @override
   void initState() {
     super.initState();
@@ -29,8 +30,10 @@ class _CameraIdCardPageV2State extends State<CameraIdCardPageV2> with BaseMixinF
     setState(() {});
   }
 
-  void onCameraInitialized(_) {
-    setState(() {});
+  void onCameraInitialized(CameraController cameraController) {
+    setState(() {
+      _cameraController = cameraController;
+    });
   }
 
   void onCameraInitializedFailure(FeatureCameraException exception) {}
@@ -51,7 +54,7 @@ class _CameraIdCardPageV2State extends State<CameraIdCardPageV2> with BaseMixinF
         children: [
           Container(
             alignment: Alignment.center,
-            child: cameraController?.value.isInitialized == true ? CameraPreview(cameraController!) : Container(),
+            child: _cameraController?.value.isInitialized == true ? CameraPreview(_cameraController!) : Container(),
           ),
           IgnorePointer(
             child: CustomPaint(

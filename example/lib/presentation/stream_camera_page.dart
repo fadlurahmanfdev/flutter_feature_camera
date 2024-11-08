@@ -14,6 +14,7 @@ class StreamCameraPage extends StatefulWidget {
 }
 
 class _StreamCameraPageState extends State<StreamCameraPage> with BaseMixinFeatureCameraV2 {
+  CameraController? _cameraController;
   @override
   void initState() {
     super.initState();
@@ -39,7 +40,7 @@ class _StreamCameraPageState extends State<StreamCameraPage> with BaseMixinFeatu
       ),
       body: Stack(
         children: [
-          cameraController?.value.isInitialized == true ? CameraPreview(cameraController!) : Container(),
+          _cameraController?.value.isInitialized == true ? CameraPreview(_cameraController!) : Container(),
           Align(
             alignment: Alignment.bottomCenter,
             child: _controlLayout(),
@@ -49,8 +50,10 @@ class _StreamCameraPageState extends State<StreamCameraPage> with BaseMixinFeatu
     );
   }
 
-  void onCameraInitialized(CameraController controller) {
-    setState(() {});
+  void onCameraInitialized(CameraController cameraController) {
+    setState(() {
+      _cameraController = cameraController;
+    });
   }
 
   void onCameraInitializedFailure(FeatureCameraException exception) {}
