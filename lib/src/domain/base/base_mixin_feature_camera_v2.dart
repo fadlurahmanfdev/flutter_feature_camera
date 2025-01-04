@@ -184,6 +184,7 @@ mixin BaseMixinFeatureCameraV2 {
     required CameraLensDirection cameraLensDirection,
     required void Function(CameraController controller) onCameraInitialized,
     required void Function(FeatureCameraException exception) onCameraInitializedFailure,
+    ImageFormatGroup? imageFormatGroup,
   }) async {
     return initializeCamera(
       cameraLensDirection: cameraLensDirection,
@@ -191,7 +192,7 @@ mixin BaseMixinFeatureCameraV2 {
       onCameraInitializedFailure: onCameraInitializedFailure,
       enableAudio: false,
       resolutionPreset: ResolutionPreset.low,
-      imageFormatGroup: Platform.isAndroid ? ImageFormatGroup.nv21 : ImageFormatGroup.bgra8888,
+      imageFormatGroup: imageFormatGroup ?? (Platform.isAndroid ? ImageFormatGroup.nv21 : ImageFormatGroup.bgra8888),
     );
   }
 

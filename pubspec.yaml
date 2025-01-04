@@ -1,6 +1,6 @@
 name: flutter_feature_camera
-description: "Camera Package from fadlurahmanfdev"
-version: 0.1.0
+description: "Library to simplified camera handling"
+version: 0.1.1
 homepage: https://github.com/fadlurahmanfdev/flutter_feature_camera
 
 environment:

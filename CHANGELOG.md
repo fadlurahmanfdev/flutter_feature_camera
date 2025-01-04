@@ -1,3 +1,7 @@
+## 0.1.1
+
+* image format group as a parameterized
+
 ## 0.1.0
 
 * add exif
