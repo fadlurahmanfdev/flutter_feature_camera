@@ -1,6 +1,10 @@
+## 0.1.2
+
+* resolution preset as a parameterized in initialize streaming image
+
 ## 0.1.1
 
-* image format group as a parameterized
+* image format group as a parameterized in initialize streaming image
 
 ## 0.1.0
 
