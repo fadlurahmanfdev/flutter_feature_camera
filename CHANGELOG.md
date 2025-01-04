@@ -1,3 +1,7 @@
+## 0.1.3
+
+* downgrade minimum sdk version
+
 ## 0.1.2
 
 * resolution preset as a parameterized in initialize streaming image
