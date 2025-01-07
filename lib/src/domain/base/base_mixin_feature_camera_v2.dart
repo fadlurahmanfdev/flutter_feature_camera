@@ -352,8 +352,16 @@ mixin BaseMixinFeatureCameraV2 {
 
   /// Stops the image stream from the camera.
   Future<void> stopImageStream() async {
-    _isStreamingImage = false;
-    await _cameraController?.stopImageStream();
-    log("successfully stopImageStream");
+    if (_isStreamingImage) {
+      _isStreamingImage = false;
+      try {
+        await _cameraController?.stopImageStream();
+        log("successfully stop image stream");
+      } catch (e) {
+        log("failed stop image stream: $e");
+      }
+    } else {
+      log("no need stop image stream, stream image is not started yet");
+    }
   }
 }

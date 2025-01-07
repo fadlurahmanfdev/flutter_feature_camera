@@ -1,3 +1,7 @@
+## 0.1.5
+
+* stop image stream only when stream image is on
+
 ## 0.1.4
 
 * remove timer when streaming image
