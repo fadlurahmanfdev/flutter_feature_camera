@@ -311,8 +311,6 @@ mixin BaseMixinFeatureCameraV2 {
     return CaptureImageModel(file: newFile, exifData: exifData);
   }
 
-  Timer? _streamImageTimer;
-
   bool _isStreamingImage = false;
 
   bool get isStreamingImage => _isStreamingImage;
@@ -339,19 +337,15 @@ mixin BaseMixinFeatureCameraV2 {
     }
 
     _cameraController?.startImageStream((image) {
-      _isStreamingImage = true;
-
-      if (_streamImageTimer != null) return;
-      _streamImageTimer = Timer(const Duration(seconds: 2), () {
-        onImageStream(
-          image,
-          _cameraDescription.sensorOrientation,
-          _cameraController?.value.deviceOrientation ?? DeviceOrientation.portraitUp,
-          cameraLensDirection,
-        );
-        _streamImageTimer?.cancel();
-        _streamImageTimer = null;
-      });
+      if (!_isStreamingImage) {
+        _isStreamingImage = true;
+      }
+      onImageStream(
+        image,
+        _cameraDescription.sensorOrientation,
+        _cameraController?.value.deviceOrientation ?? DeviceOrientation.portraitUp,
+        cameraLensDirection,
+      );
     });
     log("successfully startImageStream");
   }
@@ -359,8 +353,6 @@ mixin BaseMixinFeatureCameraV2 {
   /// Stops the image stream from the camera.
   Future<void> stopImageStream() async {
     _isStreamingImage = false;
-    _streamImageTimer?.cancel();
-    _streamImageTimer = null;
     await _cameraController?.stopImageStream();
     log("successfully stopImageStream");
   }

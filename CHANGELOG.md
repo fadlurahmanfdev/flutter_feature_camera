@@ -1,3 +1,7 @@
+## 0.1.4
+
+* remove timer when streaming image
+
 ## 0.1.3
 
 * downgrade minimum sdk version
