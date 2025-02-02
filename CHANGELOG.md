@@ -1,3 +1,7 @@
+## 0.2.5
+
+* add calculate brightness image
+
 ## 0.1.5
 
 * stop image stream only when stream image is on

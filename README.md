@@ -4,6 +4,20 @@ A Flutter library provides methode, abstract class, etc related for camera funct
 including capturing images, managing flash modes, switching between front and back cameras, and
 enabling image streaming.
 
+## Getting started
+
+### Android
+
+```gradle
+android {
+    // ... other code
+    
+    defaultConfig {
+        minSdkVersion 21 // change minSdkVersion to 21
+    }
+}
+```
+
 ## Key Features
 
 ### Rectangle Overlay
@@ -156,20 +170,6 @@ Future<void> onImageStream(CameraImage cameraImage,
 }
 ```
 
-## Getting started
-
-### Android
-
-```gradle
-android {
-    // ... other code
-    
-    defaultConfig {
-        minSdkVersion 21 // change minSdkVersion to 21
-    }
-}
-```
-
 ## Usage
 
 ### Rectangle Overlay
@@ -265,4 +265,18 @@ class _CustomCameraPageState extends State<CustomCameraPage> with BaseMixinFeatu
     setState(() {});
   }
 }
+```
+
+### Feature Camera
+
+#### Calculate Brightness Image
+
+Calculate brightness of image. 
+- 0.0 too dark
+- 0.5 normal
+- 1.0 too bright
+
+```dart
+final brightnessImage = FeatureCamera.calculateBrightness("imageBytes");
+// process brightness of image
 ```

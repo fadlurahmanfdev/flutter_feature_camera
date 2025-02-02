@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_feature_camera/flutter_feature_camera.dart';
 import 'package:flutter_feature_camera/src/data/constant/error_constant.dart';
 import 'package:flutter_feature_camera/src/data/enum/enum_feature_camera_exception.dart';
+import 'package:flutter_feature_camera/src/feature_camera.dart';
 import 'package:image/image.dart' as image_lib;
 
 /// BaseMixinFeatureCameraV2 is a mixin class designed to facilitate camera-related functionalities.
@@ -363,5 +364,9 @@ mixin BaseMixinFeatureCameraV2 {
     } else {
       log("no need stop image stream, stream image is not started yet");
     }
+  }
+
+  double? calculateBrightness(Uint8List imageBytes) {
+    return FeatureCamera.calculateBrightness(imageBytes);
   }
 }
